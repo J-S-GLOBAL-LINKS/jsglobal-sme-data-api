@@ -12,19 +12,20 @@ try:
     api_key = st.secrets["SMEPLUG_API_KEY"]
     
     headers = {
-        "Authorization": f"Token {api_key}",
+        "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
     
-    # MU GWADA /me MAIMAKON /user
-    response = requests.get("https://smeplug.com/api/v1/me", headers=headers, timeout=10)
+    # URL DAIDAI DAGA POSTMAN DOCS: smeplug.ng + /account/balance
+    response = requests.get("https://smeplug.ng/api/v1/account/balance", headers=headers, timeout=10)
     
     if response.status_code == 200:
         st.success("✅ API YA HAUBA - An haɗa da SMEPlug")
         data = response.json()
-        st.write(f"**Sannu, {data.get('username', data.get('name', 'JSGlobal'))}**")
-        st.write(f"**Balance: ₦{data.get('balance', data.get('wallet', '0'))}**")
-        st.write(f"**Email: {data.get('email', 'N/A')}**")
+        st.write(f"**Wallet Balance: ₦{data.get('balance', '0')}**")
+        st.write(f"**Account Name: {data.get('account_name', 'J.S GLOBAL')}**")
+        st.write(f"**Account Number: {data.get('account_number', 'N/A')}**")
+        st.write(f"**Bank: {data.get('bank_name', 'N/A')}**")
     else:
         st.error(f"❌ API BA YA AIKI - Code: {response.status_code}")
         st.code(f"URL: {response.url}")
