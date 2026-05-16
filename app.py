@@ -3,7 +3,7 @@ import requests
 
 st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="logo.png", layout="wide")
 
-# CSS DON KYAU KAMAR VTU.NG
+# CSS DON KYAU
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -58,10 +58,10 @@ if 'show_balance' not in st.session_state:
 try:
     response = requests.get(f"{BASE_URL}/account/balance", headers=headers, timeout=10)
     balance = response.json().get('balance', '0') if response.status_code == 200 else '0'
-except:
+except Exception:
     balance = '0'
 
-# HEADER - LOGO + CAC
+# HEADER
 col1, col2 = st.columns([1, 8])
 with col1:
     st.image("logo.png", width=60)
@@ -91,7 +91,8 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 # FUND WALLET BUTTON
 st.markdown('<div class="fund-btn">', unsafe_allow_html=True)
-st.button("+ Fund Wallet", use_container_width=True)
+if st.button("+ Fund Wallet", use_container_width=True):
+    st.info("Za a tura ka zuwa SMEPlug don cika wallet. Ko ka tuntube mu: 07062589825")
 st.markdown('</div>', unsafe_allow_html=True)
 st.write("")
 
@@ -111,7 +112,6 @@ if st.session_state.page == 'dashboard':
     st.markdown("#### What would you like to do?")
     st.write("")
 
-    # ROW 1
     col1, col2 = st.columns(2)
     with col1:
         if st.button("📞\n\nAirtime", use_container_width=True):
@@ -124,7 +124,6 @@ if st.session_state.page == 'dashboard':
     
     st.write("")
     
-    # ROW 2
     col1, col2 = st.columns(2)
     with col1:
         if st.button("📺\n\nCable TV", use_container_width=True):
@@ -137,18 +136,16 @@ if st.session_state.page == 'dashboard':
 
     st.write("")
 
-    # ROW 3
     col1, col2 = st.columns(2)
     with col1:
         if st.button("🧾\n\nPrint Recharge", use_container_width=True):
-            st.info("Coming Soon - Zamu ƙara nan gaba")
+            st.info("Coming Soon")
     with col2:
         if st.button("🎰\n\nFund Betting", use_container_width=True):
-            st.info("Coming Soon - Zamu ƙara nan gaba")
+            st.info("Coming Soon")
     
     st.write("")
 
-    # ROW 4
     col1, col2 = st.columns(2)
     with col1:
         if st.button("💸\n\nTransfer Money", use_container_width=True):
@@ -159,7 +156,6 @@ if st.session_state.page == 'dashboard':
 
     st.write("")
 
-    # ROW 5
     col1, col2 = st.columns(2)
     with col1:
         if st.button("📝\n\nWAEC ePIN", use_container_width=True):
@@ -172,7 +168,6 @@ if st.session_state.page == 'dashboard':
 
     st.write("")
 
-    # ROW 6
     col1, col2 = st.columns(2)
     with col1:
         if st.button("🌐\n\nSmile Internet", use_container_width=True):
@@ -221,36 +216,4 @@ elif st.session_state.page == 'data':
             plan_response = requests.get(f"{BASE_URL}/data/plans/{selected_network_id}", headers=headers)
             if plan_response.status_code == 200:
                 plans = plan_response.json().get('data', [])
-                plan_options = {f"{p['name']} - ₦{p['price']}": p['id'] for p in plans}
-                selected_plan_name = st.selectbox("Zaɓi Data Plan", list(plan_options.keys()))
-                selected_plan_id = plan_options[selected_plan_name]
-                phone_number = st.text_input("Lambar Wayar", placeholder="08012345678", max_chars=11)
-                
-                if st.button("Saya Data Yanzu", type="primary", use_container_width=True):
-                    if len(phone_number) == 11:
-                        payload = {"network": selected_network_id, "plan": selected_plan_id, "mobile_number": phone_number, "Ported_number": True}
-                        buy_response = requests.post(f"{BASE_URL}/data/purchase", headers=headers, json=payload)
-                        if buy_response.status_code == 200:
-                            st.success(f"✅ An saida {selected_plan_name} zuwa {phone_number}")
-                            st.balloons()
-                        else:
-                            st.error(f"❌ Error: {buy_response.text}")
-    except Exception as e:
-        st.error(f"Matsala: {e}")
-
-# CABLE TV PAGE
-elif st.session_state.page == 'cable':
-    st.subheader("📺 Pay DSTV / GOTV / Startimes")
-    try:
-        cable_response = requests.get(f"{BASE_URL}/cable/providers", headers=headers)
-        if cable_response.status_code == 200:
-            providers = cable_response.json().get('data', [])
-            provider_options = {p['name']: p['id'] for p in providers}
-            selected_provider_name = st.selectbox("Zaɓi TV", list(provider_options.keys()))
-            selected_provider_id = provider_options[selected_provider_name]
-            
-            smartcard_number = st.text_input("Smartcard / IUC Number")
-            
-            if st.button("Duba Sunan Mai TV"):
-                if smartcard_number:
-                    verify_payload
+                plan_options = {f"{p['name
