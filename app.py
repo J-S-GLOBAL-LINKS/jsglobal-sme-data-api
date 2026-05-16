@@ -66,7 +66,7 @@ div[data-testid="stButton"] > button:hover {
 api_key = st.secrets["SMEPLUG_API_KEY"]
 BASE_URL = "https://smeplug.ng/api/v1"
 headers = {
-    "Authorization": f"Bearer {api_key}",
+    "Authorization": "Bearer " + api_key,
     "Content-Type": "application/json"
 }
 
@@ -82,8 +82,11 @@ if "user_data" not in st.session_state:
 
 # SAMO BALANCE
 try:
-    response = requests.get(f"{BASE_URL}/account/balance", headers=headers, timeout=10)
-    balance = response.json().get("balance", "0") if response.status_code == 200 else "0"
+    response = requests.get(BASE_URL + "/account/balance", headers=headers, timeout=10)
+    if response.status_code == 200:
+        balance = response.json().get("balance", "0")
+    else:
+        balance = "0"
 except Exception:
     balance = "0"
 
@@ -173,7 +176,7 @@ if st.session_state.kyc_status == "pending" and st.session_state.page == "dashbo
 if st.session_state.page == "dashboard":
     st.markdown('<div class="wallet-container">', unsafe_allow_html=True)
     st.markdown("##### WALLET BALANCE / KUDIN WALLET")
-    col1, col2, col3 = st.columns([6,1])
+    col1, col2, col3 = st.columns([6,1,1])
     with col1:
         if st.session_state.show_balance:
             st.markdown(f"## N{balance}")
@@ -371,7 +374,7 @@ elif st.session_state.page == "ussd":
     st.markdown("---")
     st.success("Tip / Shawara: Ajiye wadannan codes a wayarka. Za su taimake ka idan babu internet!")
 
-# KYC PAGE - AN GYARA
+# KYC PAGE
 elif st.session_state.page == "kyc":
     st.subheader("KYC Verification / Tabbatar da KYC")
     st.markdown("**Dole ne ka cika wannan don amfani da services - CBN Regulation / Wannan doka ce ta CBN**")
@@ -502,7 +505,7 @@ elif st.session_state.page == "airtime":
     else:
         st.subheader("Buy Airtime VTU / Sayi Katin Wayar")
         try:
-            net_response = requests.get(f"{BASE_URL}/networks", headers=headers)
+            net_response = requests.get(BASE_URL + "/networks", headers=headers)
             if net_response.status_code == 200:
                 networks = net_response.json().get("data", [])
                 network_options = {net["name"]: net["id"] for net in networks}
@@ -514,7 +517,7 @@ elif st.session_state.page == "airtime":
                 if st.button("Saya Airtime Yanzu / Buy Airtime Now", type="primary", use_container_width=True):
                     if len(phone_number) == 11:
                         payload = {"network": selected_network_id, "amount": amount, "mobile_number": phone_number, "Ported_number": True}
-                        buy_response = requests.post(f"{BASE_URL}/airtime/purchase", headers=headers, json=payload)
+                        buy_response = requests.post(BASE_URL + "/airtime/purchase", headers=headers, json=payload)
                         if buy_response.status_code == 200:
                             st.success(f"An saida airtime N{amount} zuwa {phone_number} / Airtime N{amount} sent to {phone_number}")
                             st.balloons()
@@ -533,14 +536,14 @@ elif st.session_state.page == "data":
     else:
         st.subheader("Buy Data Bundle / Sayi Data")
         try:
-            net_response = requests.get(f"{BASE_URL}/networks", headers=headers)
+            net_response = requests.get(BASE_URL + "/networks", headers=headers)
             if net_response.status_code == 200:
                 networks = net_response.json().get("data", [])
                 network_options = {net["name"]: net["id"] for net in networks}
                 selected_network_name = st.selectbox("Zaɓi Network / Select Network", list(network_options.keys()))
                 selected_network_id = network_options[selected_network_name]
                 
-                plan_response = requests.get(f"{BASE_URL}/data/plans/{selected_network_id}", headers=headers)
+                plan_response = requests.get(BASE_URL + "/data/plans/" + str(selected_network_id), headers=headers)
                 if plan_response.status_code == 200:
                     plans = plan_response.json().get("data", [])
                     plan_options = {f"{p['name']} - N{p['price']}": p["id"] for p in plans}
@@ -551,7 +554,7 @@ elif st.session_state.page == "data":
                     if st.button("Saya Data Yanzu / Buy Data Now", type="primary", use_container_width=True):
                         if len(phone_number) == 11:
                             payload = {"network": selected_network_id, "plan": selected_plan_id, "mobile_number": phone_number, "Ported_number": True}
-                            buy_response = requests.post(f"{BASE_URL}/data/purchase", headers=headers, json=payload)
+                            buy_response = requests.post(BASE_URL + "/data/purchase", headers=headers, json=payload)
                             if buy_response.status_code == 200:
                                 st.success(f"An saida {selected_plan_name} zuwa {phone_number} / Sent {selected_plan_name} to {phone_number}")
                                 st.balloons()
@@ -567,7 +570,7 @@ elif st.session_state.page == "cable":
     else:
         st.subheader("Pay DSTV / GOTV / Startimes / Biya Kudin Talabijin")
         try:
-            cable_response = requests.get(f"{BASE_URL}/cable/providers", headers=headers)
+            cable_response = requests.get(BASE_URL + "/cable/providers", headers=headers)
             if cable_response.status_code == 200:
                 providers = cable_response.json().get("data", [])
                 provider_options = {p["name"]: p["id"] for p in providers}
@@ -579,13 +582,13 @@ elif st.session_state.page == "cable":
                 if st.button("Duba Sunan Mai TV / Verify Name"):
                     if smartcard_number:
                         verify_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number}
-                        verify_response = requests.post(f"{BASE_URL}/cable/verify", headers=headers, json=verify_payload)
+                        verify_response = requests.post(BASE_URL + "/cable/verify", headers=headers, json=verify_payload)
                         if verify_response.status_code == 200:
                             customer_name = verify_response.json().get("data", {}).get("name", "N/A")
                             st.session_state.cable_customer = customer_name
                             st.info(f"Sunan Mai TV / Customer Name: {customer_name}")
                             
-                            plan_response = requests.get(f"{BASE_URL}/cable/plans/{selected_provider_id}", headers=headers)
+                            plan_response = requests.get(BASE_URL + "/cable/plans/" + str(selected_provider_id), headers=headers)
                             if plan_response.status_code == 200:
                                 plans = plan_response.json().get("data", [])
                                 plan_options = {f"{p['name']} - N{p['price']}": p["id"] for p in plans}
@@ -597,7 +600,7 @@ elif st.session_state.page == "cable":
                     
                     if st.button("Biya Cable TV Yanzu / Pay Cable Now", type="primary", use_container_width=True):
                         pay_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number, "plan": selected_plan_id}
-                        pay_response = requests.post(f"{BASE_URL}/cable/purchase", headers=headers, json=pay_payload)
+                        pay_response = requests.post(BASE_URL + "/cable/purchase", headers=headers, json=pay_payload)
                         if pay_response.status_code == 200:
                             st.success(f"An biya {selected_plan_name} / Paid {selected_plan_name}")
                             st.balloons()
@@ -611,7 +614,7 @@ elif st.session_state.page == "electricity":
     else:
         st.subheader("Pay NEPA / Electricity Bills / Biya Kudin Wuta")
         try:
-            disco_response = requests.get(f"{BASE_URL}/electricity/discos", headers=headers)
+            disco_response = requests.get(BASE_URL + "/electricity/discos", headers=headers)
             if disco_response.status_code == 200:
                 discos = disco_response.json().get("data", [])
                 disco_options = {d["name"]: d["id"] for d in discos}
@@ -625,7 +628,7 @@ elif st.session_state.page == "electricity":
                 if st.button("Duba Sunan Mai Meter / Verify Name"):
                     if meter_number:
                         verify_payload = {"disco": selected_disco_id, "meter_number": meter_number, "meter_type": meter_type}
-                        verify_response = requests.post(f"{BASE_URL}/electricity/verify", headers=headers, json=verify_payload)
+                        verify_response = requests.post(BASE_URL + "/electricity/verify", headers=headers, json=verify_payload)
                         if verify_response.status_code == 200:
                             customer_name = verify_response.json().get("data", {}).get("name", "N/A")
                             st.session_state.customer_name = customer_name
@@ -634,7 +637,7 @@ elif st.session_state.page == "electricity":
                 if st.button("Biya NEPA Yanzu / Pay NEPA Now", type="primary", use_container_width=True):
                     if meter_number and "customer_name" in st.session_state:
                         pay_payload = {"disco": selected_disco_id, "meter_number": meter_number, "meter_type": meter_type, "amount": amount}
-                        pay_response = requests.post(f"{BASE_URL}/electricity/purchase", headers=headers, json=pay_payload)
+                        pay_response = requests.post(BASE_URL + "/electricity/purchase", headers=headers, json=pay_payload)
                         if pay_response.status_code == 200:
                             token = pay_response.json().get("data", {}).get("token", "N/A")
                             st.success("An biya NEPA! / NEPA Paid!")
@@ -650,7 +653,7 @@ elif st.session_state.page == "waec":
     else:
         st.subheader("Buy WAEC ePIN / Sayi WAEC PIN")
         try:
-            exam_response = requests.get(f"{BASE_URL}/education/exams", headers=headers)
+            exam_response = requests.get(BASE_URL + "/education/exams", headers=headers)
             if exam_response.status_code == 200:
                 exams = exam_response.json().get("data", [])
                 waec = next((e for e in exams if "waec" in e["name"].lower()), None)
@@ -658,7 +661,7 @@ elif st.session_state.page == "waec":
                     quantity = st.number_input("Quantity / Yawa", min_value=1, max_value=10, value=1)
                     if st.button("Buy WAEC ePIN / Sayi WAEC PIN", type="primary", use_container_width=True):
                         payload = {"exam": waec["id"], "quantity": quantity}
-                        buy_response = requests.post(f"{BASE_URL}/education/purchase", headers=headers, json=payload)
+                        buy_response = requests.post(BASE_URL + "/education/purchase", headers=headers, json=payload)
                         if buy_response.status_code == 200:
                             pins = buy_response.json().get("data", {}).get("pins", [])
                             st.success(f"An sayi {quantity} WAEC ePIN / Bought {quantity} WAEC ePIN")
@@ -674,7 +677,7 @@ elif st.session_state.page == "jamb":
     else:
         st.subheader("Buy JAMB ePIN / Sayi JAMB PIN")
         try:
-            exam_response = requests.get(f"{BASE_URL}/education/exams", headers=headers)
+            exam_response = requests.get(BASE_URL + "/education/exams", headers=headers)
             if exam_response.status_code == 200:
                 exams = exam_response.json().get("data", [])
                 jamb = next((e for e in exams if "jamb" in e["name"].lower()), None)
@@ -683,4 +686,48 @@ elif st.session_state.page == "jamb":
                     if st.button("Buy JAMB ePIN / Sayi JAMB PIN", type="primary", use_container_width=True):
                         if profile_code:
                             payload = {"exam": jamb["id"], "profile_code": profile_code}
-                            buy_response = requests.post(f"{BASE_URL}/education
+                            buy_response = requests.post(BASE_URL + "/education/purchase", headers=headers, json=payload)
+                            if buy_response.status_code == 200:
+                                pin = buy_response.json().get("data", {}).get("pin", "N/A")
+                                st.success("An sayi JAMB ePIN / Bought JAMB ePIN")
+                                st.code(f"PIN: {pin}")
+        except Exception as e:
+            st.error(f"Matsala / Problem: {e}")
+
+# SUPPORT PAGE
+elif st.session_state.page == "support":
+    st.subheader("Customer Support / Taimakon Kwastoma")
+    st.markdown("""
+    **WhatsApp:** 07062589825  
+    **Email:** j.s.global.links@gmail.com  
+    **Address:** NO.278, LAYIN MAI UNGUWA KANO SAUNA, KANO STATE  
+    
+    **Business Hours:** 8:00 AM - 10:00 PM Daily
+    
+    **CAC:** RC 8984371 - Verified Business
+    """)
+    st.info("Muna nan don taimaka maka 24/7 / We are here to help you 24/7")
+
+# TRANSACTIONS PAGE
+elif st.session_state.page == "history":
+    st.subheader("Tarihin Saye-Saye / Transaction History")
+    try:
+        trans_response = requests.get(BASE_URL + "/transactions", headers=headers)
+        if trans_response.status_code == 200:
+            transactions = trans_response.json().get("data", [])
+            if transactions:
+                st.dataframe(transactions, use_container_width=True)
+            else:
+                st.info("Babu transaction tukuna / No transactions yet")
+    except Exception as e:
+        st.error(f"Matsala: {e}")
+
+# FOOTER
+st.markdown("---")
+st.markdown("""
+<div style='text-align: center; color: grey; font-size: 12px;'>
+<b>J.S.GLOBAL LINKS AND SERVICES</b><br>
+CAC: RC 8984371 | WhatsApp: 07062589825<br>
+© 2025 - Registered under CAMA 2020
+</div>
+""", unsafe_allow_html=True)
