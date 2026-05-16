@@ -13,7 +13,7 @@ st.markdown("""
 div[data-testid="stButton"] > button {
     height: 120px;
     background-color: white;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #e0e0;
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     font-size: 15px;
@@ -59,6 +59,14 @@ div[data-testid="stButton"] > button:hover {
     border-left: 5px solid #2a5298;
     margin: 10px 0;
 }
+.new-badge {
+    background-color: #ff4757;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 11px;
+    margin-left: 5px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -90,7 +98,7 @@ try:
 except Exception:
     balance = "0"
 
-# ===== SIDEBAR MENU - HAUSA + ENGLISH =====
+# ===== SIDEBAR MENU =====
 with st.sidebar:
     st.image("logo.png", width=80)
     st.markdown("### J.S.GLOBAL LINKS")
@@ -165,7 +173,7 @@ if st.session_state.page != "dashboard":
 # KYC WARNING
 if st.session_state.kyc_status == "pending" and st.session_state.page == "dashboard":
     st.markdown('<div class="kyc-warning">', unsafe_allow_html=True)
-    st.warning("KYC Required / Ana Bukatar KYC: Ka kammala KYC Verification don amfani da duk services. Danna KYC Verification a menu.")
+    st.warning("KYC Required / Ana Bukatar KYC: Ka kammala KYC Verification don amfani da duk services.")
     if st.button("Verify KYC Now / Tabbatar Yanzu", type="primary"):
         st.session_state.page = "kyc"
         st.rerun()
@@ -267,112 +275,196 @@ if st.session_state.page == "dashboard":
             st.session_state.page = "history"
             st.rerun()
 
-# USSD CODES PAGE
+# USSD CODES PAGE - SABBIN CODES NA NCC 2026
 elif st.session_state.page == "ussd":
-    st.subheader("USSD Codes / Lambobin USSD - Saya ba tare da Internet ba")
-    st.info("Danna code din don ya copy, sannan ka liƙa a wayarka ka kira / Click code to copy, then paste on your phone and dial")
+    st.subheader("USSD Codes / Lambobin USSD - NCC 2026")
+    st.success("Sabbin codes da NCC ta hada su daya ga duk networks - MTN, GLO, AIRTEL, 9MOBILE")
+    st.info("Danna code din don ya copy, sannan ka liƙa a wayarka ka kira")
+    
+    st.warning("Tsofaffin codes kamar *556#, *131#, *555* sun daina aiki. Yi amfani da sabbi yanzu!")
     
     tab1, tab2, tab3, tab4 = st.tabs(["MTN", "GLO", "AIRTEL", "9MOBILE"])
     
     with tab1:
-        st.markdown("### MTN USSD Codes")
+        st.markdown("### MTN USSD Codes - 2026 <span class='new-badge'>NEW</span>", unsafe_allow_html=True)
         
         st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-        st.markdown("**Check Balance / Duba Kudi**")
-        st.code("*556#", language="text")
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-        st.markdown("**Buy Airtime for Self / Sayi Katin Kanka**")
-        st.code("*556*Amount# e.g *556*100#", language="text")
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-        st.markdown("**Buy Airtime for Others / Sayi Wa Wani**")
-        st.code("*556*Phone*Amount# e.g *556*08012345678*100#", language="text")
+        st.markdown("**Check Airtime Balance / Duba Kudi**")
+        st.code("*310#", language="text")
+        st.caption("Tsohon code: *556# - Ya daina aiki")
         st.markdown("</div>", unsafe_allow_html=True)
         
         st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
         st.markdown("**Buy Data / Sayi Data**")
         st.code("*312#", language="text")
+        st.caption("Tsohon code: *131# - Ya daina aiki")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Recharge Airtime / Saka Katin**")
+        st.code("*311*PIN# e.g *311*123456789012345#", language="text")
+        st.caption("Tsohon code: *555*PIN# - Ya daina aiki")
         st.markdown("</div>", unsafe_allow_html=True)
         
         st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
         st.markdown("**Check Data Balance / Duba Ragowar Data**")
-        st.code("*323*4#", language="text")
+        st.code("*323#", language="text")
+        st.caption("Tsohon code: *131*4# - Ya daina aiki")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Borrow Airtime/Data / Ranci**")
+        st.code("*303#", language="text")
+        st.caption("Tsohon code: *606# - Ya daina aiki")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Share Data/Airtime / Raba**")
+        st.code("*321#", language="text")
+        st.caption("Tsohon code: *131*7# - Ya daina aiki")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Link NIN / Hada NIN**")
+        st.code("*996#", language="text")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Check Your Number / Duba Lambarka**")
+        st.code("*123*1*1#", language="text")
         st.markdown("</div>", unsafe_allow_html=True)
     
     with tab2:
-        st.markdown("### GLO USSD Codes")
+        st.markdown("### GLO USSD Codes - 2026 <span class='new-badge'>NEW</span>", unsafe_allow_html=True)
         
         st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-        st.markdown("**Check Balance / Duba Kudi**")
-        st.code("#124*1#", language="text")
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-        st.markdown("**Buy Airtime / Sayi Katin**")
-        st.code("*124*Amount# e.g *124*100#", language="text")
+        st.markdown("**Check Airtime Balance / Duba Kudi**")
+        st.code("*310#", language="text")
+        st.caption("Tsohon code: *124# - Ya daina aiki")
         st.markdown("</div>", unsafe_allow_html=True)
         
         st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
         st.markdown("**Buy Data / Sayi Data**")
-        st.code("*777#", language="text")
+        st.code("*312#", language="text")
+        st.caption("Tsohon code: *777# - Ya daina aiki")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Recharge Airtime / Saka Katin**")
+        st.code("*311*PIN#", language="text")
+        st.caption("Tsohon code: *123*PIN# - Ya daina aiki")
         st.markdown("</div>", unsafe_allow_html=True)
         
         st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
         st.markdown("**Check Data Balance / Duba Ragowar Data**")
-        st.code("*127*0#", language="text")
+        st.code("*323#", language="text")
+        st.caption("Tsohon code: *127*0# - Ya daina aiki")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Borrow Airtime/Data / Ranci**")
+        st.code("*303#", language="text")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Share Data/Airtime / Raba**")
+        st.code("*321#", language="text")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Link NIN / Hada NIN**")
+        st.code("*996#", language="text")
         st.markdown("</div>", unsafe_allow_html=True)
     
     with tab3:
-        st.markdown("### AIRTEL USSD Codes")
+        st.markdown("### AIRTEL USSD Codes - 2026 <span class='new-badge'>NEW</span>", unsafe_allow_html=True)
         
         st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-        st.markdown("**Check Balance / Duba Kudi**")
-        st.code("*123#", language="text")
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-        st.markdown("**Buy Airtime / Sayi Katin**")
-        st.code("*123*Amount# e.g *123*100#", language="text")
+        st.markdown("**Check Airtime Balance / Duba Kudi**")
+        st.code("*310#", language="text")
+        st.caption("Tsohon code: *123# - Ya daina aiki")
         st.markdown("</div>", unsafe_allow_html=True)
         
         st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
         st.markdown("**Buy Data / Sayi Data**")
-        st.code("*141#", language="text")
+        st.code("*312#", language="text")
+        st.caption("Tsohon code: *141# - Ya daina aiki")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Recharge Airtime / Saka Katin**")
+        st.code("*311*PIN#", language="text")
+        st.caption("Tsohon code: *126*PIN# - Ya daina aiki")
         st.markdown("</div>", unsafe_allow_html=True)
         
         st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
         st.markdown("**Check Data Balance / Duba Ragowar Data**")
-        st.code("*140#", language="text")
+        st.code("*323#", language="text")
+        st.caption("Tsohon code: *140# - Ya daina aiki")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Borrow Airtime/Data / Ranci**")
+        st.code("*303#", language="text")
+        st.caption("Tsohon code: *500# - Ya daina aiki")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Share Data/Airtime / Raba**")
+        st.code("*321#", language="text")
+        st.caption("Tsohon code: *141*1*5# - Ya daina aiki")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Link NIN / Hada NIN**")
+        st.code("*996#", language="text")
         st.markdown("</div>", unsafe_allow_html=True)
     
     with tab4:
-        st.markdown("### 9MOBILE USSD Codes")
+        st.markdown("### 9MOBILE USSD Codes - 2026 <span class='new-badge'>NEW</span>", unsafe_allow_html=True)
         
         st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-        st.markdown("**Check Balance / Duba Kudi**")
-        st.code("*232#", language="text")
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-        st.markdown("**Buy Airtime / Sayi Katin**")
-        st.code("*222*Amount# e.g *222*100#", language="text")
+        st.markdown("**Check Airtime Balance / Duba Kudi**")
+        st.code("*310#", language="text")
+        st.caption("Tsohon code: *232# - Ya daina aiki")
         st.markdown("</div>", unsafe_allow_html=True)
         
         st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
         st.markdown("**Buy Data / Sayi Data**")
-        st.code("*200#", language="text")
+        st.code("*312#", language="text")
+        st.caption("Tsohon code: *200# - Ya daina aiki")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Recharge Airtime / Saka Katin**")
+        st.code("*311*PIN#", language="text")
+        st.caption("Tsohon code: *222*PIN# - Ya daina aiki")
         st.markdown("</div>", unsafe_allow_html=True)
         
         st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
         st.markdown("**Check Data Balance / Duba Ragowar Data**")
-        st.code("*228#", language="text")
+        st.code("*323#", language="text")
+        st.caption("Tsohon code: *228# - Ya daina aiki")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Borrow Airtime/Data / Ranci**")
+        st.code("*303#", language="text")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Share Data/Airtime / Raba**")
+        st.code("*321#", language="text")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+        st.markdown("**Link NIN / Hada NIN**")
+        st.code("*996#", language="text")
         st.markdown("</div>", unsafe_allow_html=True)
     
     st.markdown("---")
-    st.success("Tip / Shawara: Ajiye wadannan codes a wayarka. Za su taimake ka idan babu internet!")
+    st.error("**Gargadi / Warning:** NCC ta hada codes su zama daya tun March 2026. Idan ka yi amfani da tsohon code kamar *556#, ba zai yi aiki ba!")
+    st.success("**Tip / Shawara:** Ajiye sabbin codes a wayarka. Suna aiki ba tare da internet ba!")
 
 # KYC PAGE
 elif st.session_state.page == "kyc":
@@ -630,104 +722,4 @@ elif st.session_state.page == "electricity":
                         verify_payload = {"disco": selected_disco_id, "meter_number": meter_number, "meter_type": meter_type}
                         verify_response = requests.post(BASE_URL + "/electricity/verify", headers=headers, json=verify_payload)
                         if verify_response.status_code == 200:
-                            customer_name = verify_response.json().get("data", {}).get("name", "N/A")
-                            st.session_state.customer_name = customer_name
-                            st.info(f"Sunan Mai Meter / Customer Name: {customer_name}")
-
-                if st.button("Biya NEPA Yanzu / Pay NEPA Now", type="primary", use_container_width=True):
-                    if meter_number and "customer_name" in st.session_state:
-                        pay_payload = {"disco": selected_disco_id, "meter_number": meter_number, "meter_type": meter_type, "amount": amount}
-                        pay_response = requests.post(BASE_URL + "/electricity/purchase", headers=headers, json=pay_payload)
-                        if pay_response.status_code == 200:
-                            token = pay_response.json().get("data", {}).get("token", "N/A")
-                            st.success("An biya NEPA! / NEPA Paid!")
-                            st.code(f"TOKEN: {token}")
-                            st.balloons()
-        except Exception as e:
-            st.error(f"Matsala / Problem: {e}")
-
-# WAEC PAGE
-elif st.session_state.page == "waec":
-    if st.session_state.kyc_status != "approved":
-        st.error("Dole ka kammala KYC tukuna / You must complete KYC first")
-    else:
-        st.subheader("Buy WAEC ePIN / Sayi WAEC PIN")
-        try:
-            exam_response = requests.get(BASE_URL + "/education/exams", headers=headers)
-            if exam_response.status_code == 200:
-                exams = exam_response.json().get("data", [])
-                waec = next((e for e in exams if "waec" in e["name"].lower()), None)
-                if waec:
-                    quantity = st.number_input("Quantity / Yawa", min_value=1, max_value=10, value=1)
-                    if st.button("Buy WAEC ePIN / Sayi WAEC PIN", type="primary", use_container_width=True):
-                        payload = {"exam": waec["id"], "quantity": quantity}
-                        buy_response = requests.post(BASE_URL + "/education/purchase", headers=headers, json=payload)
-                        if buy_response.status_code == 200:
-                            pins = buy_response.json().get("data", {}).get("pins", [])
-                            st.success(f"An sayi {quantity} WAEC ePIN / Bought {quantity} WAEC ePIN")
-                            for pin in pins:
-                                st.code(f"PIN: {pin}")
-        except Exception as e:
-            st.error(f"Matsala / Problem: {e}")
-
-# JAMB PAGE
-elif st.session_state.page == "jamb":
-    if st.session_state.kyc_status != "approved":
-        st.error("Dole ka kammala KYC tukuna / You must complete KYC first")
-    else:
-        st.subheader("Buy JAMB ePIN / Sayi JAMB PIN")
-        try:
-            exam_response = requests.get(BASE_URL + "/education/exams", headers=headers)
-            if exam_response.status_code == 200:
-                exams = exam_response.json().get("data", [])
-                jamb = next((e for e in exams if "jamb" in e["name"].lower()), None)
-                if jamb:
-                    profile_code = st.text_input("JAMB Profile Code", max_chars=10)
-                    if st.button("Buy JAMB ePIN / Sayi JAMB PIN", type="primary", use_container_width=True):
-                        if profile_code:
-                            payload = {"exam": jamb["id"], "profile_code": profile_code}
-                            buy_response = requests.post(BASE_URL + "/education/purchase", headers=headers, json=payload)
-                            if buy_response.status_code == 200:
-                                pin = buy_response.json().get("data", {}).get("pin", "N/A")
-                                st.success("An sayi JAMB ePIN / Bought JAMB ePIN")
-                                st.code(f"PIN: {pin}")
-        except Exception as e:
-            st.error(f"Matsala / Problem: {e}")
-
-# SUPPORT PAGE
-elif st.session_state.page == "support":
-    st.subheader("Customer Support / Taimakon Kwastoma")
-    st.markdown("""
-    **WhatsApp:** 07062589825  
-    **Email:** j.s.global.links@gmail.com  
-    **Address:** NO.278, LAYIN MAI UNGUWA KANO SAUNA, KANO STATE  
-    
-    **Business Hours:** 8:00 AM - 10:00 PM Daily
-    
-    **CAC:** RC 8984371 - Verified Business
-    """)
-    st.info("Muna nan don taimaka maka 24/7 / We are here to help you 24/7")
-
-# TRANSACTIONS PAGE
-elif st.session_state.page == "history":
-    st.subheader("Tarihin Saye-Saye / Transaction History")
-    try:
-        trans_response = requests.get(BASE_URL + "/transactions", headers=headers)
-        if trans_response.status_code == 200:
-            transactions = trans_response.json().get("data", [])
-            if transactions:
-                st.dataframe(transactions, use_container_width=True)
-            else:
-                st.info("Babu transaction tukuna / No transactions yet")
-    except Exception as e:
-        st.error(f"Matsala: {e}")
-
-# FOOTER
-st.markdown("---")
-st.markdown("""
-<div style='text-align: center; color: grey; font-size: 12px;'>
-<b>J.S.GLOBAL LINKS AND SERVICES</b><br>
-CAC: RC 8984371 | WhatsApp: 07062589825<br>
-© 2025 - Registered under CAMA 2020
-</div>
-""", unsafe_allow_html=True)
+                            customer_name = verify_response.json().get("data",
