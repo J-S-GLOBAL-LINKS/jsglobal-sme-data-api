@@ -13,7 +13,7 @@ st.markdown("""
 div[data-testid="stButton"] > button {
     height: 120px;
     background-color: white;
-    border: 1px solid #e0e0;
+    border: 1px solid #e0e0e0;
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     font-size: 15px;
@@ -660,4 +660,29 @@ elif st.session_state.page == 'waec':
                         payload = {"exam": waec['id'], "quantity": quantity}
                         buy_response = requests.post(f"{BASE_URL}/education/purchase", headers=headers, json=payload)
                         if buy_response.status_code == 200:
-                            pins =
+                            pins = buy_response.json().get('data', {}).get('pins', [])
+                            st.success(f"An sayi {quantity} WAEC ePIN / Bought {quantity} WAEC ePIN")
+                            for pin in pins:
+                                st.code(f"PIN: {pin}")
+        except Exception as e:
+            st.error(f"Matsala / Problem: {e}")
+
+# JAMB PAGE
+elif st.session_state.page == 'jamb':
+    if st.session_state.kyc_status != 'approved':
+        st.error("Dole ka kammala KYC tukuna / You must complete KYC first")
+    else:
+        st.subheader("Buy JAMB ePIN / Sayi JAMB PIN")
+        try:
+            exam_response = requests.get(f"{BASE_URL}/education/exams", headers=headers)
+            if exam_response.status_code == 200:
+                exams = exam_response.json().get('data', [])
+                jamb = next((e for e in exams if 'jamb' in e['name'].lower()), None)
+                if jamb:
+                    profile_code = st.text_input("JAMB Profile Code", max_chars=10)
+                    if st.button("Buy JAMB ePIN / Sayi JAMB PIN", type="primary", use_container_width=True):
+                        if profile_code:
+                            payload = {"exam": jamb['id'], "profile_code": profile_code}
+                            buy_response = requests.post(f"{BASE_URL}/education/purchase", headers=headers, json=payload)
+                            if buy_response.status_code == 200:
+                                pin = buy_response.json().get('data', {}).get('pin', '
