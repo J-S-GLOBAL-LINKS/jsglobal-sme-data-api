@@ -4,7 +4,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="logo.png", layout="wide")
 
-# CSS DON KYAU
+# CSS DON KYAU KAMAR VTU.NG
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -13,7 +13,7 @@ st.markdown("""
 div[data-testid="stButton"] > button {
     height: 110px;
     background-color: white;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #e0e0;
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     font-size: 16px;
@@ -77,6 +77,8 @@ if 'kyc_status' not in st.session_state:
     st.session_state.kyc_status = 'pending'
 if 'user_data' not in st.session_state:
     st.session_state.user_data = {}
+if 'all_kyc' not in st.session_state:
+    st.session_state.all_kyc = []
 
 # SAMO BALANCE
 try:
@@ -85,7 +87,7 @@ try:
 except Exception:
     balance = '0'
 
-# ===== SIDEBAR MENU - BABU EMOJI A BUTTONS =====
+# ===== SIDEBAR MENU =====
 with st.sidebar:
     st.image("logo.png", width=80)
     st.markdown("### J.S.GLOBAL LINKS")
@@ -128,6 +130,10 @@ with st.sidebar:
     
     if st.button("Support", use_container_width=True):
         st.session_state.page = 'support'
+        st.rerun()
+    
+    if st.button("Admin Panel", use_container_width=True):
+        st.session_state.page = 'admin'
         st.rerun()
     
     st.markdown("---")
@@ -417,9 +423,45 @@ elif st.session_state.page == 'kyc':
                         "submitted_date": str(datetime.now())
                     }
                     st.session_state.kyc_status = 'submitted'
+                    st.session_state.all_kyc.append(st.session_state.user_data)
                     st.success("An karbi KYC dinka! Muna duba shi. Za mu tuntube ka cikin 24 hours.")
                     st.balloons()
                     st.rerun()
+
+# ADMIN PANEL
+elif st.session_state.page == 'admin':
+    st.subheader("Admin Panel - J.S.GLOBAL")
+    admin_pass = st.text_input("Shigar da Admin Password", type="password")
+    
+    if admin_pass == "Jamilu123":  # CANZA WANNAN PASSWORD
+        st.success("Welcome CEO Jamilu")
+        
+        st.markdown("### Pending KYC Requests")
+        if st.session_state.kyc_status == 'submitted':
+            st.write("**Suna:**", st.session_state.user_data.get('full_name'))
+            st.write("**NIN/BVN:**", st.session_state.user_data.get('id_number'))
+            st.write("**Phone:**", st.session_state.user_data.get('phone'))
+            st.write("**Address:**", st.session_state.user_data.get('address'))
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("Approve KYC", type="primary"):
+                    st.session_state.kyc_status = 'approved'
+                    st.success("KYC Approved! Customer zai iya amfani da services yanzu")
+                    st.rerun()
+            with col2:
+                if st.button("Reject KYC"):
+                    st.session_state.kyc_status = 'pending'
+                    st.error("KYC Rejected")
+        else:
+            st.info("Babu Pending KYC tukuna")
+            
+        st.markdown("---")
+        st.markdown("### Wallet Balance")
+        st.metric("SMEPlug Balance", f"N{balance}")
+        
+    elif admin_pass != "":
+        st.error("Wrong Password")
 
 # PROFILE PAGE
 elif st.session_state.page == 'profile':
