@@ -22,7 +22,7 @@ headers = {
     "Content-Type": "application/json"
 }
 
-# TABS 6: BALANCE | DATA | AIRTIME | ELECTRICITY | CABLE TV | TRANSACTIONS
+# TABS 6
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "💰 Balance", "📱 Data", "📞 Airtime", "⚡ NEPA", "📺 Cable TV", "📜 History"
 ])
@@ -72,11 +72,10 @@ with tab2:
                         if buy_response.status_code == 200:
                             st.success(f"✅ An saida {selected_plan_name} zuwa {phone_number}")
                             st.balloons()
-                            st.info("📞 Don ƙarin bayani: WhatsApp 07062589825")
                         else:
                             st.error(f"❌ Error: {buy_response.text}")
                     else:
-                        st.warning("Lambar waya ba daidai ba. Dole ne ta zama 11 digits")
+                        st.warning("Lambar waya ba daidai ba")
     except Exception as e:
         st.error(f"Matsala: {e}")
 
@@ -100,7 +99,6 @@ with tab3:
                     if buy_response.status_code == 200:
                         st.success(f"✅ An saida airtime ₦{amount} zuwa {phone_number}")
                         st.balloons()
-                        st.info("📞 Don ƙarin bayani: WhatsApp 07062589825")
                     else:
                         st.error(f"❌ Error: {buy_response.text}")
     except Exception as e:
@@ -108,7 +106,7 @@ with tab3:
 
 # TAB 4: NEPA / ELECTRICITY
 with tab4:
-    st.subheader("Biya Kuɗin NEPA / Lantarki - Duk DisCos")
+    st.subheader("Biya Kuɗin NEPA / Lantarki")
     try:
         disco_response = requests.get(f"{BASE_URL}/electricity/discos", headers=headers)
         if disco_response.status_code == 200:
@@ -130,7 +128,7 @@ with tab4:
                         st.session_state.customer_name = customer_name
                         st.info(f"Sunan Mai Meter: {customer_name}")
                     else:
-                        st.error(f"❌ Meter Number ba daidai ba")
+                        st.error("Meter Number ba daidai ba")
 
             if st.button("Biya NEPA Yanzu", type="primary", use_container_width=True):
                 if meter_number and 'customer_name' in st.session_state:
@@ -161,9 +159,4 @@ with tab5:
             
             smartcard_number = st.text_input("Smartcard / IUC Number", placeholder="1234567890")
             
-            if st.button("Duba Sunan Mai TV"):
-                if smartcard_number:
-                    verify_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number}
-                    verify_response = requests.post(f"{BASE_URL}/cable/verify", headers=headers, json=verify_payload)
-                    if verify_response.status_code == 200:
-                        customer_name
+            if st.button("Duba
