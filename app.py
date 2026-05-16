@@ -4,7 +4,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="logo.png", layout="wide")
 
-# CSS DON KYAU
+# CSS
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -58,15 +58,6 @@ div[data-testid="stButton"] > button:hover {
     border-radius: 10px;
     border-left: 5px solid #2a5298;
     margin: 10px 0;
-    position: relative;
-}
-.new-badge {
-    background-color: #ff4757;
-    color: white;
-    padding: 2px 8px;
-    border-radius: 5px;
-    font-size: 11px;
-    margin-left: 5px;
 }
 .copy-btn > button {
     background-color: #2a5298 !important;
@@ -109,12 +100,11 @@ try:
 except Exception:
     balance = "0"
 
-# FUNCTION DON COPY
 def copy_code(code):
     st.session_state.copied_code = code
     st.toast(f"Copied {code} - Liqa a wayarka!", icon="✅")
 
-# ===== SIDEBAR MENU =====
+# SIDEBAR
 with st.sidebar:
     st.image("logo.png", width=80)
     st.markdown("### J.S.GLOBAL LINKS")
@@ -149,23 +139,9 @@ with st.sidebar:
         st.session_state.page = "history"
         st.rerun()
     
-    if st.button("💰 Commission", use_container_width=True):
-        st.info("Coming Soon")
-    
-    if st.button("⚙️ Settings", use_container_width=True):
-        st.info("Coming Soon")
-    
-    if st.button("🆘 Support", use_container_width=True):
-        st.session_state.page = "support"
-        st.rerun()
-    
     if st.button("🔐 Admin Panel", use_container_width=True):
         st.session_state.page = "admin"
         st.rerun()
-    
-    st.markdown("---")
-    if st.button("🚪 Logout", use_container_width=True):
-        st.info("Logout feature coming soon")
     
     st.markdown("---")
     st.caption("Kano, Nigeria")
@@ -221,9 +197,6 @@ if st.session_state.page == "dashboard":
     st.markdown("</div>", unsafe_allow_html=True)
     st.write("")
 
-    st.info("Upgrade Membership - Unlock more discounts and other benefits")
-    st.write("")
-
     st.markdown("#### What would you like to do?")
     st.write("")
 
@@ -265,24 +238,6 @@ if st.session_state.page == "dashboard":
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("📝 WAEC ePIN", use_container_width=True):
-            if st.session_state.kyc_status != "approved":
-                st.error("Dole ka yi KYC tukuna")
-            else:
-                st.session_state.page = "waec"
-                st.rerun()
-    with col2:
-        if st.button("📝 JAMB ePIN", use_container_width=True):
-            if st.session_state.kyc_status != "approved":
-                st.error("Dole ka yi KYC tukuna")
-            else:
-                st.session_state.page = "jamb"
-                st.rerun()
-
-    st.write("")
-
-    col1, col2 = st.columns(2)
-    with col1:
         if st.button("📞 USSD Codes", use_container_width=True):
             st.session_state.page = "ussd"
             st.rerun()
@@ -300,7 +255,7 @@ elif st.session_state.page == "ussd":
         st.info(f"Copied: {st.session_state.copied_code} - Yanzu liqa a wayarka ka kira!")
         st.session_state.copied_code = ""
     
-    st.warning("Tsofaffin codes kamar *556#, *131#, *555* sun daina aiki. Yi amfani da sabbi yanzu!")
+    st.warning("Tsofaffin codes kamar *556#, *131#, *555* sun daina aiki!")
     
     tab1, tab2, tab3, tab4 = st.tabs(["🟡 MTN", "🟢 GLO", "🔴 AIRTEL", "🟡 9MOBILE"])
     
@@ -450,18 +405,6 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
             if st.button("Copy", key="glo_data_bal"):
                 copy_code("*323#")
-            st.markdown("</div>", unsafe_allow_html=True)
-        
-        col1, col2 = st.columns([3,1])
-        with col1:
-            st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-            st.markdown("**Borrow Airtime/Data**")
-            st.code("*303#", language="text")
-            st.markdown("</div>", unsafe_allow_html=True)
-        with col2:
-            st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
-            if st.button("Copy", key="glo_borrow"):
-                copy_code("*303#")
             st.markdown("</div>", unsafe_allow_html=True)
     
     with tab3:
@@ -752,6 +695,10 @@ elif st.session_state.page == "airtime":
                             st.balloons()
                         else:
                             st.error(f"Error: {buy_response.text}")
+                    else:
+                        st.error("Lambar waya ba daidai ba")
+            else:
+                st.error("An samu matsala wajen dauko networks")
         except Exception as e:
             st.error(f"Matsala: {e}")
 
@@ -789,6 +736,12 @@ elif st.session_state.page == "data":
                                 st.balloons()
                             else:
                                 st.error(f"Error: {buy_response.text}")
+                        else:
+                            st.error("Lambar waya ba daidai ba")
+                else:
+                    st.error("An samu matsala wajen dauko data plans")
+            else:
+                st.error("An samu matsala wajen dauko networks")
         except Exception as e:
             st.error(f"Matsala: {e}")
 
@@ -822,6 +775,34 @@ elif st.session_state.page == "cable":
                                 plans = plan_response.json().get("data", [])
                                 plan_options = {f"{p['name']} - N{p['price']}": p["id"] for p in plans}
                                 st.session_state.cable_plans = plan_options
+                        else:
+                            st.error("Ba a sami sunan ba")
                 
                 if "cable_plans" in st.session_state:
-                    selected_plan_name = st.select
+                    selected_plan_name = st.selectbox("Zaɓi Package", list(st.session_state.cable_plans.keys()))
+                    selected_plan_id = st.session_state.cable_plans[selected_plan_name]
+                    
+                    if st.button("Biya Cable TV Yanzu", type="primary", use_container_width=True):
+                        pay_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number, "plan": selected_plan_id}
+                        pay_response = requests.post(BASE_URL + "/cable/purchase", headers=headers, json=pay_payload)
+                        if pay_response.status_code == 200:
+                            st.success(f"An biya {selected_plan_name}")
+                            st.balloons()
+                        else:
+                            st.error(f"Error: {pay_response.text}")
+            else:
+                st.error("An samu matsala wajen dauko cable providers")
+        except Exception as e:
+            st.error(f"Matsala: {e}")
+
+# ELECTRICITY PAGE
+elif st.session_state.page == "electricity":
+    if st.session_state.kyc_status != "approved":
+        st.error("Dole ka kammala KYC tukuna")
+    else:
+        st.subheader("Pay NEPA / Electricity Bills")
+        try:
+            disco_response = requests.get(BASE_URL + "/electricity/discos", headers=headers)
+            if disco_response.status_code == 200:
+                discos = disco_response.json().get("data", [])
+                disco_options = {d["name"]: d["id"] for d in discos
