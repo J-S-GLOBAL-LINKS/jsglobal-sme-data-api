@@ -162,7 +162,7 @@ if st.session_state.page != 'dashboard':
 # KYC WARNING
 if st.session_state.kyc_status == 'pending' and st.session_state.page == 'dashboard':
     st.markdown('<div class="kyc-warning">', unsafe_allow_html=True)
-    st.warning("KYC Required / Ana Bukatar KYC: Ka kammala KYC Verification don amfani da duk services. Danna 'KYC Verification' a menu.")
+    st.warning("KYC Required / Ana Bukatar KYC: Ka kammala KYC Verification don amfani da duk services. Danna KYC Verification a menu.")
     if st.button("Verify KYC Now / Tabbatar Yanzu", type="primary"):
         st.session_state.page = 'kyc'
         st.rerun()
@@ -371,7 +371,7 @@ elif st.session_state.page == 'ussd':
     st.markdown("---")
     st.success("Tip / Shawara: Ajiye wadannan codes a wayarka. Za su taimake ka idan babu internet!")
 
-# KYC PAGE
+# KYC PAGE - AN GYARA
 elif st.session_state.page == 'kyc':
     st.subheader("KYC Verification / Tabbatar da KYC")
     st.markdown("**Dole ne ka cika wannan don amfani da services - CBN Regulation / Wannan doka ce ta CBN**")
@@ -384,4 +384,280 @@ elif st.session_state.page == 'kyc':
     else:
         with st.form("kyc_form"):
             st.markdown("#### 1. Personal Information / Bayanan Kai")
-            full_name = st.text_input("Cikakken Suna / Full Name *", placeholder="J
+            full_name = st.text_input("Cikakken Suna / Full Name *", placeholder="Jamilu Sani")
+            email = st.text_input("Email Address / Imel *", placeholder="example@gmail.com")
+            phone = st.text_input("Phone Number / Lambar Wayar *", placeholder="07062589825", max_chars=11)
+            dob = st.date_input("Ranar Haihuwa / Date of Birth *")
+            
+            st.markdown("#### 2. Identity Verification / Tabbatar da Shaida")
+            id_type = st.selectbox("Nau'in ID / ID Type *", ["NIN", "BVN", "Voter's Card", "Driver's License", "International Passport"])
+            id_number = st.text_input(f"{id_type} Number *", placeholder="12345678901")
+            
+            st.markdown("#### 3. Address / Adireshin")
+            address = st.text_area("Cikakken Address / Full Address *", placeholder="NO.278, LAYIN MAI UNGUWA KANO SAUNA")
+            state = st.selectbox("State / Jiha *", ["Kano", "Lagos", "Abuja", "Kaduna", "Rivers", "Oyo", "Sauransu"])
+            lga = st.text_input("LGA / Karamar Hukuma *", placeholder="Kano Municipal")
+            
+            st.markdown("#### 4. Upload ID Document / Dora Takardar Shaida")
+            uploaded_file = st.file_uploader("Hoton ID dinka / Your ID Photo *", type=['png', 'jpg', 'jpeg'])
+            
+            st.markdown("---")
+            agree = st.checkbox("Na yarda cewa bayanan nan daidai ne / I agree this info is correct *")
+            
+            submitted = st.form_submit_button("Submit KYC / Tura KYC", type="primary", use_container_width=True)
+            
+            if submitted:
+                if not all([full_name, email, phone, id_number, address, lga, uploaded_file, agree]):
+                    st.error("Dole ka cika duka filin da * / Fill all fields with *")
+                else:
+                    st.session_state.user_data = {
+                        "full_name": full_name,
+                        "email": email,
+                        "phone": phone,
+                        "dob": str(dob),
+                        "id_type": id_type,
+                        "id_number": id_number,
+                        "address": address,
+                        "state": state,
+                        "lga": lga,
+                        "submitted_date": str(datetime.now())
+                    }
+                    st.session_state.kyc_status = 'submitted'
+                    st.success("An karbi KYC dinka! / We got your KYC! Muna duba shi. Za mu tuntube ka cikin 24 hours.")
+                    st.balloons()
+                    st.rerun()
+
+# ADMIN PANEL
+elif st.session_state.page == 'admin':
+    st.subheader("Admin Panel / Gudanarwa - J.S.GLOBAL")
+    admin_pass = st.text_input("Shigar da Admin Password / Enter Admin Password", type="password")
+    
+    if admin_pass == "Jamilu123":
+        st.success("Welcome CEO Jamilu / Barka da Zuwa Shugaba")
+        
+        st.markdown("### Pending KYC Requests / Bukatun KYC")
+        if st.session_state.kyc_status == 'submitted':
+            st.write("**Suna / Name:**", st.session_state.user_data.get('full_name'))
+            st.write("**NIN/BVN:**", st.session_state.user_data.get('id_number'))
+            st.write("**Phone:**", st.session_state.user_data.get('phone'))
+            st.write("**Address:**", st.session_state.user_data.get('address'))
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("Approve KYC / Amince", type="primary"):
+                    st.session_state.kyc_status = 'approved'
+                    st.success("KYC Approved! / An Amince! Customer zai iya amfani da services yanzu")
+                    st.rerun()
+            with col2:
+                if st.button("Reject KYC / Karyata"):
+                    st.session_state.kyc_status = 'pending'
+                    st.error("KYC Rejected / An Karyata")
+        else:
+            st.info("Babu Pending KYC tukuna / No Pending KYC yet")
+            
+        st.markdown("---")
+        st.markdown("### Wallet Balance / Kudin Wallet")
+        st.metric("SMEPlug Balance", f"N{balance}")
+        
+    elif admin_pass != "":
+        st.error("Wrong Password / Password Ba Daidai Ba")
+
+# PROFILE PAGE
+elif st.session_state.page == 'profile':
+    st.subheader("My Profile / Bayanai Na")
+    
+    st.markdown("#### Business Information / Bayanin Kamfani")
+    st.markdown(f"""
+    **Business Name / Sunan Kamfani:** J.S.GLOBAL LINKS AND SERVICES  
+    **CAC Registration / Rijistar CAC:** RC 8984371  
+    **Business Type / Nau'in Kasuwanci:** GENERAL MERCHANDISE  
+    **Address / Adireshin:** NO.278, LAYIN MAI UNGUWA KANO SAUNA, KANO STATE  
+    **Phone / Waya:** 07062589825  
+    **Wallet Balance / Kudin Wallet:** N{balance}
+    """)
+    st.success("Verified Business / An Tabbatar")
+    
+    st.markdown("---")
+    
+    st.markdown("#### Your KYC Information / Bayanin KYC Dinka")
+    if st.session_state.kyc_status == 'approved':
+        st.success("KYC Verified / An Tabbatar")
+        st.json(st.session_state.user_data)
+    elif st.session_state.kyc_status == 'submitted':
+        st.warning("KYC Under Review / Ana Duba")
+        st.json(st.session_state.user_data)
+    else:
+        st.error("KYC Not Submitted / Ba a Tura Ba")
+        if st.button("Complete KYC Now / Cika KYC Yanzu", type="primary"):
+            st.session_state.page = 'kyc'
+            st.rerun()
+
+# AIRTIME PAGE
+elif st.session_state.page == 'airtime':
+    if st.session_state.kyc_status != 'approved':
+        st.error("Dole ka kammala KYC tukuna / You must complete KYC first. Je zuwa Menu > KYC Verification")
+        if st.button("Go to KYC / Je KYC"):
+            st.session_state.page = 'kyc'
+            st.rerun()
+    else:
+        st.subheader("Buy Airtime VTU / Sayi Katin Wayar")
+        try:
+            net_response = requests.get(f"{BASE_URL}/networks", headers=headers)
+            if net_response.status_code == 200:
+                networks = net_response.json().get('data', [])
+                network_options = {net['name']: net['id'] for net in networks}
+                selected_network_name = st.selectbox("Zaɓi Network / Select Network", list(network_options.keys()))
+                selected_network_id = network_options[selected_network_name]
+                amount = st.number_input("Nawa Airtime? / How Much?", min_value=50, max_value=50000, step=50)
+                phone_number = st.text_input("Lambar Wayar / Phone Number", placeholder="08012345678", max_chars=11)
+                
+                if st.button("Saya Airtime Yanzu / Buy Airtime Now", type="primary", use_container_width=True):
+                    if len(phone_number) == 11:
+                        payload = {"network": selected_network_id, "amount": amount, "mobile_number": phone_number, "Ported_number": True}
+                        buy_response = requests.post(f"{BASE_URL}/airtime/purchase", headers=headers, json=payload)
+                        if buy_response.status_code == 200:
+                            st.success(f"An saida airtime N{amount} zuwa {phone_number} / Airtime N{amount} sent to {phone_number}")
+                            st.balloons()
+                        else:
+                            st.error(f"Error: {buy_response.text}")
+        except Exception as e:
+            st.error(f"Matsala / Problem: {e}")
+
+# DATA PAGE
+elif st.session_state.page == 'data':
+    if st.session_state.kyc_status != 'approved':
+        st.error("Dole ka kammala KYC tukuna / You must complete KYC first")
+        if st.button("Go to KYC / Je KYC"):
+            st.session_state.page = 'kyc'
+            st.rerun()
+    else:
+        st.subheader("Buy Data Bundle / Sayi Data")
+        try:
+            net_response = requests.get(f"{BASE_URL}/networks", headers=headers)
+            if net_response.status_code == 200:
+                networks = net_response.json().get('data', [])
+                network_options = {net['name']: net['id'] for net in networks}
+                selected_network_name = st.selectbox("Zaɓi Network / Select Network", list(network_options.keys()))
+                selected_network_id = network_options[selected_network_name]
+                
+                plan_response = requests.get(f"{BASE_URL}/data/plans/{selected_network_id}", headers=headers)
+                if plan_response.status_code == 200:
+                    plans = plan_response.json().get('data', [])
+                    plan_options = {f"{p['name']} - N{p['price']}": p['id'] for p in plans}
+                    selected_plan_name = st.selectbox("Zaɓi Data Plan / Select Data Plan", list(plan_options.keys()))
+                    selected_plan_id = plan_options[selected_plan_name]
+                    phone_number = st.text_input("Lambar Wayar / Phone Number", placeholder="08012345678", max_chars=11)
+                    
+                    if st.button("Saya Data Yanzu / Buy Data Now", type="primary", use_container_width=True):
+                        if len(phone_number) == 11:
+                            payload = {"network": selected_network_id, "plan": selected_plan_id, "mobile_number": phone_number, "Ported_number": True}
+                            buy_response = requests.post(f"{BASE_URL}/data/purchase", headers=headers, json=payload)
+                            if buy_response.status_code == 200:
+                                st.success(f"An saida {selected_plan_name} zuwa {phone_number} / Sent {selected_plan_name} to {phone_number}")
+                                st.balloons()
+                            else:
+                                st.error(f"Error: {buy_response.text}")
+        except Exception as e:
+            st.error(f"Matsala / Problem: {e}")
+
+# CABLE TV PAGE
+elif st.session_state.page == 'cable':
+    if st.session_state.kyc_status != 'approved':
+        st.error("Dole ka kammala KYC tukuna / You must complete KYC first")
+    else:
+        st.subheader("Pay DSTV / GOTV / Startimes / Biya Kudin Talabijin")
+        try:
+            cable_response = requests.get(f"{BASE_URL}/cable/providers", headers=headers)
+            if cable_response.status_code == 200:
+                providers = cable_response.json().get('data', [])
+                provider_options = {p['name']: p['id'] for p in providers}
+                selected_provider_name = st.selectbox("Zaɓi TV / Select TV", list(provider_options.keys()))
+                selected_provider_id = provider_options[selected_provider_name]
+                
+                smartcard_number = st.text_input("Smartcard / IUC Number")
+                
+                if st.button("Duba Sunan Mai TV / Verify Name"):
+                    if smartcard_number:
+                        verify_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number}
+                        verify_response = requests.post(f"{BASE_URL}/cable/verify", headers=headers, json=verify_payload)
+                        if verify_response.status_code == 200:
+                            customer_name = verify_response.json().get('data', {}).get('name', 'N/A')
+                            st.session_state.cable_customer = customer_name
+                            st.info(f"Sunan Mai TV / Customer Name: {customer_name}")
+                            
+                            plan_response = requests.get(f"{BASE_URL}/cable/plans/{selected_provider_id}", headers=headers)
+                            if plan_response.status_code == 200:
+                                plans = plan_response.json().get('data', [])
+                                plan_options = {f"{p['name']} - N{p['price']}": p['id'] for p in plans}
+                                st.session_state.cable_plans = plan_options
+                
+                if 'cable_plans' in st.session_state:
+                    selected_plan_name = st.selectbox("Zaɓi Package / Select Package", list(st.session_state.cable_plans.keys()))
+                    selected_plan_id = st.session_state.cable_plans[selected_plan_name]
+                    
+                    if st.button("Biya Cable TV Yanzu / Pay Cable Now", type="primary", use_container_width=True):
+                        pay_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number, "plan": selected_plan_id}
+                        pay_response = requests.post(f"{BASE_URL}/cable/purchase", headers=headers, json=pay_payload)
+                        if pay_response.status_code == 200:
+                            st.success(f"An biya {selected_plan_name} / Paid {selected_plan_name}")
+                            st.balloons()
+        except Exception as e:
+            st.error(f"Matsala / Problem: {e}")
+
+# ELECTRICITY PAGE
+elif st.session_state.page == 'electricity':
+    if st.session_state.kyc_status != 'approved':
+        st.error("Dole ka kammala KYC tukuna / You must complete KYC first")
+    else:
+        st.subheader("Pay NEPA / Electricity Bills / Biya Kudin Wuta")
+        try:
+            disco_response = requests.get(f"{BASE_URL}/electricity/discos", headers=headers)
+            if disco_response.status_code == 200:
+                discos = disco_response.json().get('data', [])
+                disco_options = {d['name']: d['id'] for d in discos}
+                selected_disco_name = st.selectbox("Zaɓi Kamfanin NEPA / Select Disco", list(disco_options.keys()))
+                selected_disco_id = disco_options[selected_disco_name]
+                
+                meter_type = st.selectbox("Meter Type / Nau'in Mita", ["prepaid", "postpaid"])
+                meter_number = st.text_input("Meter Number / Lambar Mita")
+                amount = st.number_input("Nawa Za Ka Biya? / How Much?", min_value=500, step=100)
+                
+                if st.button("Duba Sunan Mai Meter / Verify Name"):
+                    if meter_number:
+                        verify_payload = {"disco": selected_disco_id, "meter_number": meter_number, "meter_type": meter_type}
+                        verify_response = requests.post(f"{BASE_URL}/electricity/verify", headers=headers, json=verify_payload)
+                        if verify_response.status_code == 200:
+                            customer_name = verify_response.json().get('data', {}).get('name', 'N/A')
+                            st.session_state.customer_name = customer_name
+                            st.info(f"Sunan Mai Meter / Customer Name: {customer_name}")
+
+                if st.button("Biya NEPA Yanzu / Pay NEPA Now", type="primary", use_container_width=True):
+                    if meter_number and 'customer_name' in st.session_state:
+                        pay_payload = {"disco": selected_disco_id, "meter_number": meter_number, "meter_type": meter_type, "amount": amount}
+                        pay_response = requests.post(f"{BASE_URL}/electricity/purchase", headers=headers, json=pay_payload)
+                        if pay_response.status_code == 200:
+                            token = pay_response.json().get('data', {}).get('token', 'N/A')
+                            st.success("An biya NEPA! / NEPA Paid!")
+                            st.code(f"TOKEN: {token}")
+                            st.balloons()
+        except Exception as e:
+            st.error(f"Matsala / Problem: {e}")
+
+# WAEC PAGE
+elif st.session_state.page == 'waec':
+    if st.session_state.kyc_status != 'approved':
+        st.error("Dole ka kammala KYC tukuna / You must complete KYC first")
+    else:
+        st.subheader("Buy WAEC ePIN / Sayi WAEC PIN")
+        try:
+            exam_response = requests.get(f"{BASE_URL}/education/exams", headers=headers)
+            if exam_response.status_code == 200:
+                exams = exam_response.json().get('data', [])
+                waec = next((e for e in exams if 'waec' in e['name'].lower()), None)
+                if waec:
+                    quantity = st.number_input("Quantity / Yawa", min_value=1, max_value=10, value=1)
+                    if st.button("Buy WAEC ePIN / Sayi WAEC PIN", type="primary", use_container_width=True):
+                        payload = {"exam": waec['id'], "quantity": quantity}
+                        buy_response = requests.post(f"{BASE_URL}/education/purchase", headers=headers, json=payload)
+                        if buy_response.status_code == 200:
+                            pins =
