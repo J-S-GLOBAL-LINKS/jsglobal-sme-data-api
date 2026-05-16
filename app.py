@@ -16,8 +16,8 @@ try:
         "Content-Type": "application/json"
     }
     
-    # SABON ENDPOINT DIN SMEPLUG V2
-    response = requests.get("https://smeplug.com/api/v2/user", headers=headers, timeout=10)
+    # WANNAN NE URL DAIDAI - API.SMEPLUG.COM
+    response = requests.get("https://api.smeplug.com/api/v2/user", headers=headers, timeout=10)
     
     if response.status_code == 200:
         st.success("✅ API YA HAUBA - An haɗa da SMEPlug")
@@ -25,14 +25,13 @@ try:
         st.write(f"**Sannu, {data.get('username', 'Jamilu')}**")
         st.write(f"**Balance: ₦{data.get('wallet', '0')}**")
         st.write(f"**Email: {data.get('email', 'N/A')}**")
+        st.write(f"**Business: {data.get('business_name', 'JSGlobal')}**")
     else:
         st.error(f"❌ API BA YA AIKI - Code: {response.status_code}")
-        st.code(f"URL da aka gwada: {response.url}")
+        st.code(f"URL: {response.url}")
         st.code(f"SMEPlug ya ce: {response.text}")
-        st.info("Idan 401 = API Key ba daidai ba. Idan 404 = URL ba daidai ba")
         
 except KeyError:
     st.error("❌ API BA YA AIKI - Ba a samu API Key ba")
-    st.warning("Ka je Streamlit > Settings > Secrets ka saka SMEPLUG_API_KEY")
 except Exception as e:
     st.error(f"❌ Matsala: {e}")
