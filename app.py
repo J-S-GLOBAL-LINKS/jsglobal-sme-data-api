@@ -114,7 +114,7 @@ def copy_code(code):
     st.session_state.copied_code = code
     st.toast(f"Copied {code} - Liqa a wayarka!", icon="✅")
 
-# ===== SIDEBAR MENU - BABU \n =====
+# ===== SIDEBAR MENU =====
 with st.sidebar:
     st.image("logo.png", width=80)
     st.markdown("### J.S.GLOBAL LINKS")
@@ -291,7 +291,7 @@ if st.session_state.page == "dashboard":
             st.session_state.page = "history"
             st.rerun()
 
-# USSD CODES PAGE - SABBIN CODES + ICONS + COPY
+# USSD CODES PAGE
 elif st.session_state.page == "ussd":
     st.subheader("USSD Codes - NCC 2026")
     st.success("Sabbin codes da NCC ta hada su daya ga duk networks")
@@ -605,14 +605,14 @@ elif st.session_state.page == "ussd":
 
 # KYC PAGE
 elif st.session_state.page == "kyc":
-    st.subheader("KYC Verification / Tabbatar da KYC")
+    st.subheader("KYC Verification")
     st.markdown("**Dole ne ka cika wannan don amfani da services - CBN Regulation**")
     
     if st.session_state.kyc_status == "approved":
-        st.success("KYC dinka an amince da shi / Your KYC is approved. Za ka iya amfani da duk services")
+        st.success("KYC dinka an amince da shi. Za ka iya amfani da duk services")
         st.json(st.session_state.user_data)
     elif st.session_state.kyc_status == "submitted":
-        st.warning("An karbi bayanan ka / We received your info. Muna duba KYC dinka. Za mu tuntube ka cikin 24 hours.")
+        st.warning("An karbi bayanan ka. Muna duba KYC dinka. Za mu tuntube ka cikin 24 hours.")
     else:
         with st.form("kyc_form"):
             st.markdown("#### 1. Personal Information")
@@ -770,4 +770,58 @@ elif st.session_state.page == "data":
                 networks = net_response.json().get("data", [])
                 network_options = {net["name"]: net["id"] for net in networks}
                 selected_network_name = st.selectbox("Zaɓi Network", list(network_options.keys()))
-                selected_network_id = network_options
+                selected_network_id = network_options[selected_network_name]
+                
+                plan_response = requests.get(BASE_URL + "/data/plans/" + str(selected_network_id), headers=headers)
+                if plan_response.status_code == 200:
+                    plans = plan_response.json().get("data", [])
+                    plan_options = {f"{p['name']} - N{p['price']}": p["id"] for p in plans}
+                    selected_plan_name = st.selectbox("Zaɓi Data Plan", list(plan_options.keys()))
+                    selected_plan_id = plan_options[selected_plan_name]
+                    phone_number = st.text_input("Lambar Wayar", placeholder="08012345678", max_chars=11)
+                    
+                    if st.button("Saya Data Yanzu", type="primary", use_container_width=True):
+                        if len(phone_number) == 11:
+                            payload = {"network": selected_network_id, "plan": selected_plan_id, "mobile_number": phone_number, "Ported_number": True}
+                            buy_response = requests.post(BASE_URL + "/data/purchase", headers=headers, json=payload)
+                            if buy_response.status_code == 200:
+                                st.success(f"An saida {selected_plan_name} zuwa {phone_number}")
+                                st.balloons()
+                            else:
+                                st.error(f"Error: {buy_response.text}")
+        except Exception as e:
+            st.error(f"Matsala: {e}")
+
+# CABLE TV PAGE
+elif st.session_state.page == "cable":
+    if st.session_state.kyc_status != "approved":
+        st.error("Dole ka kammala KYC tukuna")
+    else:
+        st.subheader("Pay DSTV / GOTV / Startimes")
+        try:
+            cable_response = requests.get(BASE_URL + "/cable/providers", headers=headers)
+            if cable_response.status_code == 200:
+                providers = cable_response.json().get("data", [])
+                provider_options = {p["name"]: p["id"] for p in providers}
+                selected_provider_name = st.selectbox("Zaɓi TV", list(provider_options.keys()))
+                selected_provider_id = provider_options[selected_provider_name]
+                
+                smartcard_number = st.text_input("Smartcard / IUC Number")
+                
+                if st.button("Duba Sunan Mai TV"):
+                    if smartcard_number:
+                        verify_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number}
+                        verify_response = requests.post(BASE_URL + "/cable/verify", headers=headers, json=verify_payload)
+                        if verify_response.status_code == 200:
+                            customer_name = verify_response.json().get("data", {}).get("name", "N/A")
+                            st.session_state.cable_customer = customer_name
+                            st.info(f"Sunan Mai TV: {customer_name}")
+                            
+                            plan_response = requests.get(BASE_URL + "/cable/plans/" + str(selected_provider_id), headers=headers)
+                            if plan_response.status_code == 200:
+                                plans = plan_response.json().get("data", [])
+                                plan_options = {f"{p['name']} - N{p['price']}": p["id"] for p in plans}
+                                st.session_state.cable_plans = plan_options
+                
+                if "cable_plans" in st.session_state:
+                    selected_plan_name = st.select
