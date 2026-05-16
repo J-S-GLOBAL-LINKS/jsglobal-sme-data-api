@@ -159,4 +159,54 @@ with tab5:
             
             smartcard_number = st.text_input("Smartcard / IUC Number", placeholder="1234567890")
             
-            if st.button("Duba
+            if st.button("Duba Sunan Mai TV"):
+                if smartcard_number:
+                    verify_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number}
+                    verify_response = requests.post(f"{BASE_URL}/cable/verify", headers=headers, json=verify_payload)
+                    if verify_response.status_code == 200:
+                        customer_name = verify_response.json().get('data', {}).get('name', 'N/A')
+                        st.session_state.cable_customer = customer_name
+                        st.info(f"Sunan Mai TV: {customer_name}")
+                        
+                        plan_response = requests.get(f"{BASE_URL}/cable/plans/{selected_provider_id}", headers=headers)
+                        if plan_response.status_code == 200:
+                            plans = plan_response.json().get('data', [])
+                            plan_options = {f"{p['name']} - ₦{p['price']}": p['id'] for p in plans}
+                            st.session_state.cable_plans = plan_options
+                    else:
+                        st.error("IUC Number ba daidai ba")
+            
+            if 'cable_plans' in st.session_state:
+                selected_plan_name = st.selectbox("Zaɓi Package", list(st.session_state.cable_plans.keys()))
+                selected_plan_id = st.session_state.cable_plans[selected_plan_name]
+                
+                if st.button("Biya Cable TV Yanzu", type="primary", use_container_width=True):
+                    pay_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number, "plan": selected_plan_id}
+                    pay_response = requests.post(f"{BASE_URL}/cable/purchase", headers=headers, json=pay_payload)
+                    if pay_response.status_code == 200:
+                        st.success(f"✅ An biya {selected_plan_name}")
+                        st.balloons()
+                    else:
+                        st.error(f"❌ Biyan bai yi ba: {pay_response.text}")
+    except Exception as e:
+        st.error(f"Matsala: {e}")
+
+# TAB 6: TRANSACTIONS
+with tab6:
+    st.subheader("Tarihin Saye-Saye")
+    try:
+        trans_response = requests.get(f"{BASE_URL}/transactions", headers=headers)
+        if trans_response.status_code == 200:
+            transactions = trans_response.json().get('data', [])
+            if transactions:
+                st.dataframe(transactions, use_container_width=True)
+            else:
+                st.info("Babu transaction tukuna")
+        else:
+            st.error("Bai samu transactions ba")
+    except Exception as e:
+        st.error(f"Matsala: {e}")
+
+# FOOTER
+st.markdown("---")
+st.markdown("**J.S.GLOBAL LINKS AND SERVICES** | CAC: RC 8984371 | WhatsApp: 07062589825 | + TUNTUBE MU + CAC = Nasarar Kasuwa | © 2026")
