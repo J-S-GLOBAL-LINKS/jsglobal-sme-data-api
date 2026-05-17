@@ -4,41 +4,29 @@ from datetime import datetime
 
 st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="logo.png", layout="wide")
 
-# CSS
+# CSS KAMAR HOTONKA
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
     background-color: #f8f9fa;
 }
 div[data-testid="stButton"] > button {
-    height: 60px;
+    height: 90px;
     background-color: white;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 600;
-    text-align: left;
-    padding-left: 15px;
+    text-align: center;
+    padding: 10px 5px;
+    white-space: pre-line;
+    line-height: 1.2;
 }
 div[data-testid="stButton"] > button:hover {
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     border: 1px solid #2a5298;
     color: #2a5298;
-}
-.wallet-container {
-    background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
-    padding: 1.5rem;
-    border-radius: 15px;
-    color: white;
-    margin: 1rem 0;
-}
-.fund-btn > button {
-    background-color: #ff4757 !important;
-    color: white !important;
-    border: none !important;
-    height: 50px !important;
-    font-weight: bold !important;
 }
 [data-testid="stSidebar"] {
     background-color: #1e3c72;
@@ -162,8 +150,56 @@ if st.session_state.page != "dashboard":
         st.rerun()
     st.markdown("---")
 
-# DASHBOARD
+# DASHBOARD - KAMAR HOTONKA 100%
 if st.session_state.page == "dashboard":
+    
+    # BLUE HEADER KAMAR HOTON
+    st.markdown(f"""
+    <div style='background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 2rem; border-radius: 15px; color: white; margin-bottom: 1rem;'>
+        <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;'>
+            <div style='font-size: 14px; opacity: 0.9;'>WALLET BALANCE</div>
+            <div style='font-size: 12px; opacity: 0.8;'>1 of 2 ></div>
+        </div>
+        <div style='font-size: 32px; font-weight: bold; margin-bottom: 1.5rem;'>{f'N{balance}' if st.session_state.show_balance else '******'}</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # FUND WALLET + REFRESH + EYE
+    col1, col2, col3 = st.columns([3, 1, 3])
+    with col1:
+        if st.button("➕ Fund Wallet", use_container_width=True, key="fund"):
+            st.info("Za a tura ka zuwa SMEPlug don cika wallet. Ko ka tuntube mu: 07062589825")
+    with col2:
+        if st.button("🔄", key="refresh"):
+            st.rerun()
+    with col3:
+        if st.button("👁️", key="eye"):
+            st.session_state.show_balance = not st.session_state.show_balance
+            st.rerun()
+    
+    st.write("")
+    
+    # UPGRADE MEMBERSHIP CARD
+    st.markdown("""
+    <div style='background-color: #e8eaf6; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;'>
+        <div>
+            <div style='font-weight: bold; color: #1e3c72; font-size: 16px;'>Upgrade Membership</div>
+            <div style='font-size: 13px; color: #5c6bc0;'>Unlock more discounts and other benefits</div>
+        </div>
+        <div style='font-size: 24px; color: #1e3c72;'>›</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # WHAT WOULD YOU LIKE TO DO
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.markdown("### What would you like to do?")
+    with col2:
+        st.markdown("<div style='text-align: right; color: #2a5298; font-weight: 600; padding-top: 10px;'>See all ›</div>", unsafe_allow_html=True)
+    
+    st.write("")
+    
+    # KYC WARNING
     if st.session_state.kyc_status == "pending":
         st.markdown('<div class="kyc-warning">', unsafe_allow_html=True)
         st.warning("KYC Required: Ka kammala KYC Verification don amfani da duk services.")
@@ -172,80 +208,96 @@ if st.session_state.page == "dashboard":
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
         st.write("")
-
-    st.markdown('<div class="wallet-container">', unsafe_allow_html=True)
-    st.markdown("##### WALLET BALANCE")
-    col1, col2, col3 = st.columns([6,1,1])
+    
+    # ROW 1: Airtime | Data | Cable TV | Electricity
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
-        if st.session_state.show_balance:
-            st.markdown(f"## N{balance}")
-        else:
-            st.markdown("## ******")
-    with col2:
-        if st.button("👁️", key="eye"):
-            st.session_state.show_balance = not st.session_state.show_balance
-            st.rerun()
-    with col3:
-        if st.button("🔄", key="refresh"):
-            st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    st.markdown('<div class="fund-btn">', unsafe_allow_html=True)
-    if st.button("Fund Wallet", use_container_width=True):
-        st.info("Za a tura ka zuwa SMEPlug don cika wallet. Ko ka tuntube mu: 07062589825")
-    st.markdown("</div>", unsafe_allow_html=True)
-    st.write("")
-
-    st.markdown("#### What would you like to do?")
-    st.write("")
-
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("📱 Airtime", use_container_width=True):
+        if st.button("📞\n\nAirtime", use_container_width=True, key="btn_airtime"):
             if st.session_state.kyc_status != "approved":
                 st.error("Dole ka yi KYC tukuna")
             else:
                 st.session_state.page = "airtime"
                 st.rerun()
     with col2:
-        if st.button("📶 Data", use_container_width=True):
+        if st.button("🌐\n\nData", use_container_width=True, key="btn_data"):
             if st.session_state.kyc_status != "approved":
                 st.error("Dole ka yi KYC tukuna")
             else:
                 st.session_state.page = "data"
                 st.rerun()
-    
-    st.write("")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("📺 Cable TV", use_container_width=True):
+    with col3:
+        if st.button("📺\n\nCable\nTV", use_container_width=True, key="btn_cable"):
             if st.session_state.kyc_status != "approved":
                 st.error("Dole ka yi KYC tukuna")
             else:
                 st.session_state.page = "cable"
                 st.rerun()
-    with col2:
-        if st.button("💡 Electricity", use_container_width=True):
+    with col4:
+        if st.button("💡\n\nElectricity", use_container_width=True, key="btn_electric"):
             if st.session_state.kyc_status != "approved":
                 st.error("Dole ka yi KYC tukuna")
             else:
                 st.session_state.page = "electricity"
                 st.rerun()
-
+    
     st.write("")
-
-    col1, col2 = st.columns(2)
+    
+    # ROW 2: Print Recharge | Fund Betting | Transfer Money | Withdraw Commission
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
-        if st.button("📞 USSD Codes", use_container_width=True):
-            st.session_state.page = "ussd"
-            st.rerun()
+        if st.button("🖨️\n\nPrint\nRecharge", use_container_width=True, key="btn_print"):
+            st.info("Coming Soon")
     with col2:
-        if st.button("📊 Transactions", use_container_width=True):
-            st.session_state.page = "history"
-            st.rerun()
+        if st.button("🎲\n\nFund\nBetting", use_container_width=True, key="btn_betting"):
+            st.info("Coming Soon")
+    with col3:
+        if st.button("💸\n\nTransfer\nMoney", use_container_width=True, key="btn_transfer"):
+            st.info("Coming Soon")
+    with col4:
+        if st.button("💰\n\nWithdraw\nCommission", use_container_width=True, key="btn_withdraw"):
+            st.info("Coming Soon")
+    
+    st.write("")
+    
+    # ROW 3: WAEC | JAMB | Smile Internet
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        if st.button("📝\n\nWAEC\nePIN", use_container_width=True, key="btn_waec"):
+            if st.session_state.kyc_status != "approved":
+                st.error("Dole ka yi KYC tukuna")
+            else:
+                st.session_state.page = "waec"
+                st.rerun()
+    with col2:
+        if st.button("📝\n\nJAMB\nePIN", use_container_width=True, key="btn_jamb"):
+            if st.session_state.kyc_status != "approved":
+                st.error("Dole ka yi KYC tukuna")
+            else:
+                st.session_state.page = "jamb"
+                st.rerun()
+    with col3:
+        if st.button("📡\n\nSmile\nInternet", use_container_width=True, key="btn_smile"):
+            st.info("Coming Soon")
+    with col4:
+        st.write("")
+    
+    st.write("")
+    
+    # NEED HELP CARD
+    st.markdown("""
+    <div style='background-color: #e8eaf6; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;'>
+        <div style='display: flex; align-items: center; gap: 15px;'>
+            <div style='font-size: 32px;'>❓</div>
+            <div>
+                <div style='font-weight: bold; color: #1e3c72; font-size: 16px;'>Need Help?</div>
+                <div style='font-size: 13px; color: #5c6bc0;'>Try our self service or open a ticket</div>
+            </div>
+        </div>
+        <div style='font-size: 24px; color: #1e3c72;'>›</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-# USSD CODES PAGE
+# USSD CODES PAGE - SABBIN CODES NCC 2026
 elif st.session_state.page == "ussd":
     st.subheader("USSD Codes - NCC 2026")
     st.success("Sabbin codes da NCC ta hada su daya ga duk networks")
@@ -324,6 +376,18 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
             if st.button("Copy", key="mtn_borrow"):
                 copy_code("*303#")
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        col1, col2 = st.columns([3,1])
+        with col1:
+            st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
+            st.markdown("**Link NIN**")
+            st.code("*996#", language="text")
+            st.markdown("</div>", unsafe_allow_html=True)
+        with col2:
+            st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
+            if st.button("Copy", key="mtn_nin"):
+                copy_code("*996#")
             st.markdown("</div>", unsafe_allow_html=True)
     
     with tab2:
@@ -490,10 +554,6 @@ elif st.session_state.page == "ussd":
             if st.button("Copy", key="9mobile_data_bal"):
                 copy_code("*323#")
             st.markdown("</div>", unsafe_allow_html=True)
-    
-    st.markdown("---")
-    st.error("**Gargadi:** NCC ta hada codes su zama daya tun March 2026. Idan ka yi amfani da tsohon code kamar *556#, ba zai yi aiki ba!")
-    st.success("**Tip:** Danna 'Copy' button, sannan liqa a wayarka ka kira. Ba sai ka rubuta da hannu ba!")
 
 # KYC PAGE
 elif st.session_state.page == "kyc":
@@ -724,71 +784,3 @@ elif st.session_state.page == "cable":
                                 plans = plan_response.json().get("data", [])
                                 plan_options = {f"{p['name']} - N{p['price']}": p["id"] for p in plans}
                                 st.session_state.cable_plans = plan_options
-                        else:
-                            st.error("Ba a sami sunan ba")
-                
-                if "cable_plans" in st.session_state:
-                    selected_plan_name = st.selectbox("Zaɓi Package", list(st.session_state.cable_plans.keys()))
-                    selected_plan_id = st.session_state.cable_plans[selected_plan_name]
-                    
-                    if st.button("Biya Cable TV Yanzu", type="primary", use_container_width=True):
-                        pay_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number, "plan": selected_plan_id}
-                        pay_response = requests.post(BASE_URL + "/cable/purchase", headers=headers, json=pay_payload)
-                        if pay_response.status_code == 200:
-                            st.success(f"An biya {selected_plan_name}")
-                            st.balloons()
-                        else:
-                            st.error(f"Error: {pay_response.text}")
-            else:
-                st.error("An samu matsala wajen dauko cable providers")
-        except Exception as e:
-            st.error(f"Matsala: {e}")
-
-# ELECTRICITY PAGE
-elif st.session_state.page == "electricity":
-    if st.session_state.kyc_status != "approved":
-        st.error("Dole ka kammala KYC tukuna")
-    else:
-        st.subheader("Pay NEPA / Electricity Bills")
-        try:
-            disco_response = requests.get(BASE_URL + "/electricity/discos", headers=headers)
-            if disco_response.status_code == 200:
-                discos = disco_response.json().get("data", [])
-                disco_options = {d["name"]: d["id"] for d in discos}
-                selected_disco_name = st.selectbox("Zaɓi Kamfanin NEPA", list(disco_options.keys()))
-                selected_disco_id = disco_options[selected_disco_name]
-                
-                meter_type = st.selectbox("Meter Type", ["prepaid", "postpaid"])
-                meter_number = st.text_input("Meter Number")
-                amount = st.number_input("Nawa Za Ka Biya?", min_value=500, step=100)
-                
-                if st.button("Duba Sunan Mai Meter"):
-                    if meter_number:
-                        verify_payload = {"disco": selected_disco_id, "meter_number": meter_number, "meter_type": meter_type}
-                        verify_response = requests.post(BASE_URL + "/electricity/verify", headers=headers, json=verify_payload)
-                        if verify_response.status_code == 200:
-                            customer_name = verify_response.json().get("data", {}).get("name", "N/A")
-                            st.session_state.electricity_customer = customer_name
-                            st.info(f"Sunan Mai Meter: {customer_name}")
-                        else:
-                            st.error("Ba a sami sunan ba")
-                
-                if "electricity_customer" in st.session_state:
-                    if st.button("Biya Kudin Wuta Yanzu", type="primary", use_container_width=True):
-                        pay_payload = {"disco": selected_disco_id, "meter_number": meter_number, "meter_type": meter_type, "amount": amount}
-                        pay_response = requests.post(BASE_URL + "/electricity/purchase", headers=headers, json=pay_payload)
-                        if pay_response.status_code == 200:
-                            token = pay_response.json().get("data", {}).get("token", "N/A")
-                            st.success(f"An biya! Token: {token}")
-                            st.balloons()
-                        else:
-                            st.error(f"Error: {pay_response.text}")
-            else:
-                st.error("An samu matsala wajen dauko discos")
-        except Exception as e:
-            st.error(f"Matsala: {e}")
-
-# HISTORY PAGE
-elif st.session_state.page == "history":
-    st.subheader("Transaction History")
-    st.info("Za a nuna tarihin cinikayyarka anan. API endpoint na history ba a haɗa ba tukuna.")
