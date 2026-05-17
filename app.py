@@ -275,6 +275,7 @@ if st.session_state.page == "dashboard":
                 <div style='font-weight: bold; color: #1e3c72; font-size: 16px;'>Need Help?</div>
                 <div style='font-size: 13px; color: #5c6bc0;'>Try our self service or open a ticket</div>
             </div>
+        </div>
         <div style='font-size: 24px; color: #1e3c72;'>›</div>
     </div>
     """, unsafe_allow_html=True)
@@ -293,7 +294,6 @@ elif st.session_state.page == "ussd":
     
     with tab1:
         st.markdown("### 🟡 MTN USSD Codes - 2026")
-        
         col1, col2 = st.columns([3,1])
         with col1:
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
@@ -373,7 +373,6 @@ elif st.session_state.page == "ussd":
     
     with tab2:
         st.markdown("### 🟢 GLO USSD Codes - 2026")
-        
         col1, col2 = st.columns([3,1])
         with col1:
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
@@ -428,7 +427,6 @@ elif st.session_state.page == "ussd":
     
     with tab3:
         st.markdown("### 🔴 AIRTEL USSD Codes - 2026")
-        
         col1, col2 = st.columns([3,1])
         with col1:
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
@@ -483,7 +481,6 @@ elif st.session_state.page == "ussd":
     
     with tab4:
         st.markdown("### 🟡 9MOBILE USSD Codes - 2026")
-        
         col1, col2 = st.columns([3,1])
         with col1:
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
@@ -770,4 +767,4 @@ elif st.session_state.page == "cable":
                         pay_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number, "plan": selected_plan_id}
                         pay_response = requests.post(BASE_URL + "/cable/purchase", headers=headers, json=pay_payload)
                         if pay_response.status_code == 200:
-                            st.success
+                            st.success(f"An biya {selected_plan_name
