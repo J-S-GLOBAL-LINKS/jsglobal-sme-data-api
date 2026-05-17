@@ -274,7 +274,6 @@ if st.session_state.page == "dashboard":
                 <div style='font-weight: bold; color: #1e3c72; font-size: 16px;'>Need Help?</div>
                 <div style='font-size: 13px; color: #5c6bc0;'>Try our self service or open a ticket</div>
             </div>
-        </div>
         <div style='font-size: 24px; color: #1e3c72;'>›</div>
     </div>
     """, unsafe_allow_html=True)
@@ -741,17 +740,4 @@ elif st.session_state.page == "cable":
                 
                 smartcard_number = st.text_input("Smartcard / IUC Number")
                 
-                if st.button("Duba Sunan Mai TV"):
-                    if smartcard_number:
-                        verify_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number}
-                        verify_response = requests.post(BASE_URL + "/cable/verify", headers=headers, json=verify_payload)
-                        if verify_response.status_code == 200:
-                            customer_name = verify_response.json().get("data", {}).get("name", "N/A")
-                            st.session_state.cable_customer = customer_name
-                            st.info(f"Sunan Mai TV: {customer_name}")
-                            
-                            plan_response = requests.get(BASE_URL + "/cable/plans/" + str(selected_provider_id), headers=headers)
-                            if plan_response.status_code == 200:
-                                plans = plan_response.json().get("data", [])
-                                plan_options = {f"{p['name']} - N{p['price']}": p["id"] for p in plans}
-                                st.session_state.cable_pl
+                if st.button("Duba Sunan Mai TV
