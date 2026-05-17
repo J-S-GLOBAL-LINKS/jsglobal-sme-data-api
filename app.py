@@ -764,4 +764,10 @@ elif st.session_state.page == "cable":
                 
                 if "cable_plans" in st.session_state:
                     selected_plan_name = st.selectbox("Zaɓi Package", list(st.session_state.cable_plans.keys()))
-                    selected_plan_id =
+                    selected_plan_id = st.session_state.cable_plans[selected_plan_name]
+                    
+                    if st.button("Biya Cable TV Yanzu", type="primary", use_container_width=True):
+                        pay_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number, "plan": selected_plan_id}
+                        pay_response = requests.post(BASE_URL + "/cable/purchase", headers=headers, json=pay_payload)
+                        if pay_response.status_code == 200:
+                            st.success
