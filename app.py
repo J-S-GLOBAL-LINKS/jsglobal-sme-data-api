@@ -4,7 +4,6 @@ from datetime import datetime
 
 st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="logo.png", layout="wide")
 
-# CSS
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -58,7 +57,6 @@ div[data-testid="stButton"] > button:hover {
 </style>
 """, unsafe_allow_html=True)
 
-# API SETUP
 api_key = st.secrets["SMEPLUG_API_KEY"]
 BASE_URL = "https://smeplug.ng/api/v1"
 headers = {
@@ -66,7 +64,6 @@ headers = {
     "Content-Type": "application/json"
 }
 
-# SESSION STATE
 if "page" not in st.session_state:
     st.session_state.page = "dashboard"
 if "show_balance" not in st.session_state:
@@ -75,8 +72,9 @@ if "kyc_status" not in st.session_state:
     st.session_state.kyc_status = "pending"
 if "user_data" not in st.session_state:
     st.session_state.user_data = {}
+if "copied_code" not in st.session_state:
+    st.session_state.copied_code = ""
 
-# SAMO BALANCE
 try:
     response = requests.get(BASE_URL + "/account/balance", headers=headers, timeout=10)
     if response.status_code == 200:
@@ -90,10 +88,6 @@ def copy_code(code):
     st.session_state.copied_code = code
     st.toast(f"Copied {code}", icon="✅")
 
-if "copied_code" not in st.session_state:
-    st.session_state.copied_code = ""
-
-# SIDEBAR
 with st.sidebar:
     st.image("logo.png", width=80)
     st.markdown("### J.S.GLOBAL LINKS")
@@ -136,7 +130,6 @@ with st.sidebar:
     st.caption("Kano, Nigeria")
     st.caption("07062589825")
 
-# HEADER
 col1, col2 = st.columns([1, 8])
 with col1:
     st.image("logo.png", width=50)
@@ -144,17 +137,14 @@ with col2:
     st.markdown("### J.S.GLOBAL LINKS AND SERVICES")
     st.caption("CAC: RC 8984371 | GENERAL MERCHANDISE")
 
-# BACK BUTTON
 if st.session_state.page != "dashboard":
     if st.button("← Back to Dashboard"):
         st.session_state.page = "dashboard"
         st.rerun()
     st.markdown("---")
 
-# DASHBOARD
 if st.session_state.page == "dashboard":
     
-    # BLUE HEADER
     st.markdown(f"""
     <div style='background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 2rem; border-radius: 15px; color: white; margin-bottom: 1rem;'>
         <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;'>
@@ -165,7 +155,6 @@ if st.session_state.page == "dashboard":
     </div>
     """, unsafe_allow_html=True)
     
-    # FUND WALLET + REFRESH + EYE
     col1, col2, col3 = st.columns([3, 1, 3])
     with col1:
         if st.button("➕ Fund Wallet", use_container_width=True):
@@ -180,7 +169,6 @@ if st.session_state.page == "dashboard":
     
     st.write("")
     
-    # UPGRADE MEMBERSHIP CARD
     st.markdown("""
     <div style='background-color: #e8eaf6; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;'>
         <div>
@@ -191,7 +179,6 @@ if st.session_state.page == "dashboard":
     </div>
     """, unsafe_allow_html=True)
     
-    # WHAT WOULD YOU LIKE TO DO
     col1, col2 = st.columns([3, 1])
     with col1:
         st.markdown("### What would you like to do?")
@@ -200,7 +187,6 @@ if st.session_state.page == "dashboard":
     
     st.write("")
     
-    # KYC WARNING
     if st.session_state.kyc_status == "pending":
         st.markdown('<div class="kyc-warning">', unsafe_allow_html=True)
         st.warning("KYC Required: Ka kammala KYC Verification don amfani da duk services.")
@@ -210,7 +196,6 @@ if st.session_state.page == "dashboard":
         st.markdown("</div>", unsafe_allow_html=True)
         st.write("")
     
-    # ROW 1: Airtime | Data | Cable TV | Electricity
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         if st.button("📞\n\nAirtime", use_container_width=True, key="btn_airtime"):
@@ -243,7 +228,6 @@ if st.session_state.page == "dashboard":
     
     st.write("")
     
-    # ROW 2: Print Recharge | Fund Betting | Transfer Money | Withdraw Commission
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         if st.button("🖨️\n\nPrint\nRecharge", use_container_width=True, key="btn_print"):
@@ -260,7 +244,6 @@ if st.session_state.page == "dashboard":
     
     st.write("")
     
-    # ROW 3: WAEC | JAMB | Smile Internet
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         if st.button("📝\n\nWAEC\nePIN", use_container_width=True, key="btn_waec"):
@@ -284,7 +267,6 @@ if st.session_state.page == "dashboard":
     
     st.write("")
     
-    # NEED HELP CARD
     st.markdown("""
     <div style='background-color: #e8eaf6; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;'>
         <div style='display: flex; align-items: center; gap: 15px;'>
@@ -297,7 +279,6 @@ if st.session_state.page == "dashboard":
     </div>
     """, unsafe_allow_html=True)
 
-# USSD CODES PAGE
 elif st.session_state.page == "ussd":
     st.subheader("USSD Codes - NCC 2026")
     st.success("Sabbin codes da NCC ta hada su daya ga duk networks")
@@ -555,7 +536,6 @@ elif st.session_state.page == "ussd":
                 copy_code("*323#")
             st.markdown("</div>", unsafe_allow_html=True)
 
-# KYC PAGE
 elif st.session_state.page == "kyc":
     st.subheader("KYC Verification")
     st.markdown("**Dole ne ka cika wannan don amfani da services - CBN Regulation**")
@@ -611,7 +591,6 @@ elif st.session_state.page == "kyc":
                     st.balloons()
                     st.rerun()
 
-# ADMIN PANEL
 elif st.session_state.page == "admin":
     st.subheader("Admin Panel - J.S.GLOBAL")
     admin_pass = st.text_input("Shigar da Admin Password", type="password")
@@ -646,7 +625,6 @@ elif st.session_state.page == "admin":
     elif admin_pass != "":
         st.error("Wrong Password")
 
-# PROFILE PAGE
 elif st.session_state.page == "profile":
     st.subheader("My Profile")
     
@@ -676,7 +654,6 @@ elif st.session_state.page == "profile":
             st.session_state.page = "kyc"
             st.rerun()
 
-# AIRTIME PAGE
 elif st.session_state.page == "airtime":
     if st.session_state.kyc_status != "approved":
         st.error("Dole ka kammala KYC tukuna. Je zuwa Menu > KYC Verification")
@@ -711,7 +688,6 @@ elif st.session_state.page == "airtime":
         except Exception as e:
             st.error(f"Matsala: {e}")
 
-# DATA PAGE
 elif st.session_state.page == "data":
     if st.session_state.kyc_status != "approved":
         st.error("Dole ka kammala KYC tukuna")
@@ -754,7 +730,6 @@ elif st.session_state.page == "data":
         except Exception as e:
             st.error(f"Matsala: {e}")
 
-# CABLE TV PAGE
 elif st.session_state.page == "cable":
     if st.session_state.kyc_status != "approved":
         st.error("Dole ka kammala KYC tukuna")
@@ -782,4 +757,14 @@ elif st.session_state.page == "cable":
                             plan_response = requests.get(BASE_URL + "/cable/plans/" + str(selected_provider_id), headers=headers)
                             if plan_response.status_code == 200:
                                 plans = plan_response.json().get("data", [])
-                                plan_options = {f"{p['name']} - N{p
+                                plan_options = {f"{p['name']} - N{p['price']}": p["id"] for p in plans}
+                                st.session_state.cable_plans = plan_options
+                        else:
+                            st.error("Ba a sami sunan ba")
+                
+                if "cable_plans" in st.session_state:
+                    selected_plan_name = st.selectbox("Zaɓi Package", list(st.session_state.cable_plans.keys()))
+                    selected_plan_id = st.session_state.cable_plans[selected_plan_name]
+                    
+                    if st.button("Biya Cable TV Yanzu", type="primary", use_container_width=True):
+                        pay_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number, "plan": selected_plan
