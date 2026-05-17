@@ -275,7 +275,6 @@ if st.session_state.page == "dashboard":
                 <div style='font-weight: bold; color: #1e3c72; font-size: 16px;'>Need Help?</div>
                 <div style='font-size: 13px; color: #5c6bc0;'>Try our self service or open a ticket</div>
             </div>
-        </div>
         <div style='font-size: 24px; color: #1e3c72;'>›</div>
     </div>
     """, unsafe_allow_html=True)
@@ -769,4 +768,4 @@ elif st.session_state.page == "cable":
                     
                     if st.button("Biya Cable TV Yanzu", type="primary", use_container_width=True):
                         pay_payload = {"provider": selected_provider_id, "smartcard_number": smartcard_number, "plan": selected_plan_id}
-                        pay_response = requests.post(BASE_URL + "/cable/purchase", headers=headers, json=
+                        pay_response = requests.post(BASE_URL + "/cable/purchase", headers=headers,
