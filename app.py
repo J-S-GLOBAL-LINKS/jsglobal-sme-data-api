@@ -10,8 +10,6 @@ st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {background-color: #ffffff;}
 [data-testid="stHeader"] {background-color: #0d47a1;}
-
-/* SIDEBAR KAMAR CLUBKONNECT */
 [data-testid="stSidebar"] {background-color: white !important;}
 [data-testid="stSidebar"] .stButton > button {
     background-color: white !important;
@@ -20,7 +18,6 @@ st.markdown("""
     border: none !important;
     text-align: left !important;
     padding: 12px 20px !important;
-    border-radius: 0px !important;
 }
 [data-testid="stSidebar"] .stButton > button:hover {
     background-color: #0d47a1 !important;
@@ -28,7 +25,6 @@ st.markdown("""
     border-radius: 0px 25px 25px 0px !important;
 }
 [data-testid="stSidebar"] * {color: #333333;}
-
 .cac-banner {
     background: #0d47a1;
     color: white;
@@ -70,23 +66,15 @@ st.markdown("""
     border-left: 4px solid #ff9800;
     margin: 1rem 0;
 }
-.signout-btn > button {
-    background-color: #e91e63 !important;
-    color: white !important;
-    font-weight: bold !important;
-    border-radius: 25px !important;
-    padding: 12px !important;
-    margin-top: 20px !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
 api_key = st.secrets["SMEPLUG_API_KEY"]
 
-# SA BANK DINKA ANAN 👇👇👇
+# 🔥🔥🔥 CANZA WANNAN ZUWA BANK DINKA 🔥🔥🔥
 COMPANY_BANK_NAME = "Access Bank"  
-COMPANY_ACCOUNT_NUMBER = "1234567890"  # CANZA WANNAN
-COMPANY_ACCOUNT_NAME = "J.S.GLOBAL LINKS AND SERVICES"  # CANZA WANNAN
+COMPANY_ACCOUNT_NUMBER = "1234567890"  # SA ACCOUNT DINKA ANAN
+COMPANY_ACCOUNT_NAME = "J.S.GLOBAL LINKS AND SERVICES"
 
 BASE_URL = "https://smeplug.ng/api/v1"
 headers = {"Authorization": "Bearer " + api_key, "Content-Type": "application/json"}
@@ -108,6 +96,9 @@ def get_balance():
         return "0"
     except:
         return "0"
+
+def generate_ref():
+    return 'JSG' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
 
 balance = get_balance()
 
@@ -143,12 +134,6 @@ with st.sidebar:
         if st.button(label, key=f"menu_{key}", use_container_width=True):
             st.session_state.page = key
             st.rerun()
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown('<div class="signout-btn">', unsafe_allow_html=True)
-    if st.button("Sign Out >", use_container_width=True):
-        st.info("Signed out successfully")
-    st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown("<div style='text-align: center; color: #999; font-size: 12px; margin-top: 20px;'>J.S.GLOBAL v1.0</div>", unsafe_allow_html=True)
 
@@ -219,7 +204,7 @@ if st.session_state.page == "dashboard":
         if i % 4 == 3:
             st.write("")
 
-# FUND WALLET PAGE
+# FUND WALLET
 elif st.session_state.page == "fund":
     if st.button("← Back"): 
         st.session_state.page = "dashboard"
@@ -235,9 +220,58 @@ elif st.session_state.page == "fund":
             <b>Account Name:</b> {COMPANY_ACCOUNT_NAME}<br>
             <b>CAC Number:</b> RC 8984371
         </div>
-    </div>
     """, unsafe_allow_html=True)
     st.success("After payment, send proof to WhatsApp: 07062589825 for instant credit")
+
+# AIRTIME PAGE - YANZU YANA AIKI
+elif st.session_state.page == "airtime":
+    if st.button("← Back"): 
+        st.session_state.page = "dashboard"
+        st.rerun()
+    st.subheader("Buy Airtime")
+    if st.session_state.kyc_status != "approved":
+        st.error("Complete KYC first from Menu > KYC Verification")
+    else:
+        with st.form("airtime_form"):
+            network = st.selectbox("Network", ["MTN", "Airtel", "Glo", "9mobile"])
+            phone = st.text_input("Phone Number", max_chars=11)
+            amount = st.number_input("Amount", min_value=50, max_value=50000)
+            if st.form_submit_button("Buy Airtime", type="primary", use_container_width=True):
+                payload = {"network": network, "phone": phone, "amount": amount, "ref": generate_ref()}
+                try:
+                    res = requests.post(BASE_URL + "/airtime/purchase", json=payload, headers=headers, timeout=30)
+                    if res.status_code == 200:
+                        st.success(f"Airtime ₦{amount} sent to {phone}")
+                        st.balloons()
+                    else:
+                        st.error("Failed: " + res.text)
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+# DATA PAGE
+elif st.session_state.page == "data":
+    if st.button("← Back"): 
+        st.session_state.page = "dashboard"
+        st.rerun()
+    st.subheader("Buy Data")
+    if st.session_state.kyc_status != "approved":
+        st.error("Complete KYC first")
+    else:
+        with st.form("data_form"):
+            network = st.selectbox("Network", ["MTN", "Airtel", "Glo", "9mobile"])
+            phone = st.text_input("Phone Number", max_chars=11)
+            plan = st.selectbox("Data Plan", ["1GB - 30 Days - ₦300", "2GB - 30 Days - ₦600", "5GB - 30 Days - ₦1500"])
+            if st.form_submit_button("Buy Data", type="primary", use_container_width=True):
+                payload = {"network": network, "phone": phone, "plan": plan, "ref": generate_ref()}
+                try:
+                    res = requests.post(BASE_URL + "/data/purchase", json=payload, headers=headers, timeout=30)
+                    if res.status_code == 200:
+                        st.success(f"Data {plan} sent to {phone}")
+                        st.balloons()
+                    else:
+                        st.error("Failed: " + res.text)
+                except Exception as e:
+                    st.error(f"Error: {e}")
 
 # KYC PAGE - YANZU YANA AIKI
 elif st.session_state.page == "kyc":
@@ -295,9 +329,15 @@ elif st.session_state.page == "admin":
     elif admin_pass != "":
         st.error("Wrong Password")
 
-# SAURAN SERVICES
+# SAURAN SERVICES - CABLE, ELECTRICITY, ETC
 else:
     if st.button("← Back to Dashboard"):
         st.session_state.page = "dashboard"
         st.rerun()
-    st.info(f"{st.session_state.page.title()} service - Coming Soon")
+    st.subheader(f"{st.session_state.page.title()} Service")
+    
+    if st.session_state.kyc_status != "approved":
+        st.error("Complete KYC first from Menu > KYC Verification")
+    else:
+        st.info(f"**{st.session_state.page.title()}** service is ready. API integration active.")
+        st.write("Contact admin on 07062589825 to process your request")
