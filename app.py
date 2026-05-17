@@ -785,4 +785,63 @@ elif st.session_state.page == "electricity":
                         st.balloons()
                         token = buy_response.json().get("token", "")
                         if token:
-                            st.code(f
+                                         token = buy_response.json().get("token", "")
+                        if token:
+                            st.code(f"Token: {token}")
+                    else:
+                        st.error(f"Error: {buy_response.text}")
+        except Exception as e:
+            st.error(f"Error: {e}")
+
+elif st.session_state.page == "waec":
+    if st.session_state.kyc_status != "approved":
+        st.error("Complete KYC first")
+    else:
+        st.subheader("Buy WAEC ePIN")
+        quantity = st.number_input("Quantity", min_value=1, max_value=10, value=1)
+        if st.button("Buy WAEC ePIN", type="primary", use_container_width=True):
+            payload = {"quantity": quantity}
+            buy_response = requests.post(BASE_URL + "/education/waec", headers=headers, json=payload)
+            if buy_response.status_code == 200:
+                st.success(f"Purchased {quantity} WAEC ePIN(s)")
+                pins = buy_response.json().get("pins", [])
+                for pin in pins:
+                    st.code(pin)
+            else:
+                st.error(f"Error: {buy_response.text}")
+
+elif st.session_state.page == "jamb":
+    if st.session_state.kyc_status != "approved":
+        st.error("Complete KYC first")
+    else:
+        st.subheader("Buy JAMB ePIN")
+        quantity = st.number_input("Quantity", min_value=1, max_value=10, value=1)
+        if st.button("Buy JAMB ePIN", type="primary", use_container_width=True):
+            payload = {"quantity": quantity}
+            buy_response = requests.post(BASE_URL + "/education/jamb", headers=headers, json=payload)
+            if buy_response.status_code == 200:
+                st.success(f"Purchased {quantity} JAMB ePIN(s)")
+                pins = buy_response.json().get("pins", [])
+                for pin in pins:
+                    st.code(pin)
+            else:
+                st.error(f"Error: {buy_response.text}")
+
+elif st.session_state.page == "history":
+    st.subheader("Transaction History")
+    try:
+        hist_response = requests.get(BASE_URL + "/transactions", headers=headers)
+        if hist_response.status_code == 200:
+            transactions = hist_response.json().get("data", [])
+            if transactions:
+                for txn in transactions[:20]:
+                    with st.expander(f"{txn.get('type', 'N/A')} - N{txn.get('amount', 0)} - {txn.get('status', 'N/A')}"):
+                        st.write(f"**Date:** {txn.get('created_at', 'N/A')}")
+                        st.write(f"**Number:** {txn.get('phone', 'N/A')}")
+                        st.write(f"**Ref:** {txn.get('reference', 'N/A')}")
+            else:
+                st.info("No transactions yet")
+        else:
+            st.error("Error fetching transactions")
+    except Exception as e:
+        st.error(f"Error: {e}")
