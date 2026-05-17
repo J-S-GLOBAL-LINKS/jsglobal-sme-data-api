@@ -157,7 +157,7 @@ if st.session_state.page == "dashboard":
     col1, col2, col3 = st.columns([3, 1, 3])
     with col1:
         if st.button("➕ Fund Wallet", use_container_width=True):
-            st.info("Za a tura ka zuwa SMEPlug don cika wallet. Ko ka tuntube mu: 07062589825")
+            st.info("You will be redirected to SMEPlug to fund wallet. Or contact us: 07062589825")
     with col2:
         if st.button("🔄", key="refresh"):
             st.rerun()
@@ -188,7 +188,7 @@ if st.session_state.page == "dashboard":
     
     if st.session_state.kyc_status == "pending":
         st.markdown('<div class="kyc-warning">', unsafe_allow_html=True)
-        st.warning("KYC Required: Ka kammala KYC Verification don amfani da duk services.")
+        st.warning("KYC Required: Complete KYC Verification to access all services.")
         if st.button("Verify KYC Now", type="primary"):
             st.session_state.page = "kyc"
             st.rerun()
@@ -199,28 +199,28 @@ if st.session_state.page == "dashboard":
     with col1:
         if st.button("📞\n\nAirtime", use_container_width=True, key="btn_airtime"):
             if st.session_state.kyc_status != "approved":
-                st.error("Dole ka yi KYC tukuna")
+                st.error("KYC required first")
             else:
                 st.session_state.page = "airtime"
                 st.rerun()
     with col2:
         if st.button("🌐\n\nData", use_container_width=True, key="btn_data"):
             if st.session_state.kyc_status != "approved":
-                st.error("Dole ka yi KYC tukuna")
+                st.error("KYC required first")
             else:
                 st.session_state.page = "data"
                 st.rerun()
     with col3:
         if st.button("📺\n\nCable\nTV", use_container_width=True, key="btn_cable"):
             if st.session_state.kyc_status != "approved":
-                st.error("Dole ka yi KYC tukuna")
+                st.error("KYC required first")
             else:
                 st.session_state.page = "cable"
                 st.rerun()
     with col4:
         if st.button("💡\n\nElectricity", use_container_width=True, key="btn_electric"):
             if st.session_state.kyc_status != "approved":
-                st.error("Dole ka yi KYC tukuna")
+                st.error("KYC required first")
             else:
                 st.session_state.page = "electricity"
                 st.rerun()
@@ -247,14 +247,14 @@ if st.session_state.page == "dashboard":
     with col1:
         if st.button("📝\n\nWAEC\nePIN", use_container_width=True, key="btn_waec"):
             if st.session_state.kyc_status != "approved":
-                st.error("Dole ka yi KYC tukuna")
+                st.error("KYC required first")
             else:
                 st.session_state.page = "waec"
                 st.rerun()
     with col2:
         if st.button("📝\n\nJAMB\nePIN", use_container_width=True, key="btn_jamb"):
             if st.session_state.kyc_status != "approved":
-                st.error("Dole ka yi KYC tukuna")
+                st.error("KYC required first")
             else:
                 st.session_state.page = "jamb"
                 st.rerun()
@@ -281,13 +281,13 @@ if st.session_state.page == "dashboard":
 
 elif st.session_state.page == "ussd":
     st.subheader("USSD Codes - NCC 2026")
-    st.success("Sabbin codes da NCC ta hada su daya ga duk networks")
+    st.success("Unified codes by NCC for all networks")
     
     if st.session_state.copied_code:
-        st.info(f"Copied: {st.session_state.copied_code} - Yanzu liqa a wayarka ka kira!")
+        st.info(f"Copied: {st.session_state.copied_code} - Now paste and dial on your phone!")
         st.session_state.copied_code = ""
     
-    st.warning("Tsofaffin codes kamar *556#, *131#, *555* sun daina aiki!")
+    st.warning("Old codes like *556#, *131#, *555* are no longer working!")
     
     tab1, tab2, tab3, tab4 = st.tabs(["🟡 MTN", "🟢 GLO", "🔴 AIRTEL", "🟡 9MOBILE"])
     
@@ -298,7 +298,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Check Airtime Balance**")
             st.code("*310#", language="text")
-            st.caption("Tsohon: *556#")
+            st.caption("Old: *556#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -311,7 +311,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Buy Data**")
             st.code("*312#", language="text")
-            st.caption("Tsohon: *131#")
+            st.caption("Old: *131#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -324,7 +324,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Recharge Airtime**")
             st.code("*311*PIN#", language="text")
-            st.caption("Misali: *311*123456789012345#")
+            st.caption("Example: *311*123456789012345#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -337,7 +337,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Check Data Balance**")
             st.code("*323#", language="text")
-            st.caption("Tsohon: *131*4#")
+            st.caption("Old: *131*4#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -350,7 +350,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Borrow Airtime/Data**")
             st.code("*303#", language="text")
-            st.caption("Tsohon: *606#")
+            st.caption("Old: *606#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -377,7 +377,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Check Airtime Balance**")
             st.code("*310#", language="text")
-            st.caption("Tsohon: *124#")
+            st.caption("Old: *124#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -390,7 +390,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Buy Data**")
             st.code("*312#", language="text")
-            st.caption("Tsohon: *777#")
+            st.caption("Old: *777#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -403,7 +403,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Recharge Airtime**")
             st.code("*311*PIN#", language="text")
-            st.caption("Tsohon: *123*PIN#")
+            st.caption("Old: *123*PIN#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -416,7 +416,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Check Data Balance**")
             st.code("*323#", language="text")
-            st.caption("Tsohon: *127*0#")
+            st.caption("Old: *127*0#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -431,7 +431,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Check Airtime Balance**")
             st.code("*310#", language="text")
-            st.caption("Tsohon: *123#")
+            st.caption("Old: *123#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -444,7 +444,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Buy Data**")
             st.code("*312#", language="text")
-            st.caption("Tsohon: *141#")
+            st.caption("Old: *141#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -457,7 +457,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Recharge Airtime**")
             st.code("*311*PIN#", language="text")
-            st.caption("Tsohon: *126*PIN#")
+            st.caption("Old: *126*PIN#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -470,7 +470,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Check Data Balance**")
             st.code("*323#", language="text")
-            st.caption("Tsohon: *140#")
+            st.caption("Old: *140#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -485,7 +485,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Check Airtime Balance**")
             st.code("*310#", language="text")
-            st.caption("Tsohon: *232#")
+            st.caption("Old: *232#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -498,7 +498,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Buy Data**")
             st.code("*312#", language="text")
-            st.caption("Tsohon: *200#")
+            st.caption("Old: *200#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -511,7 +511,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Recharge Airtime**")
             st.code("*311*PIN#", language="text")
-            st.caption("Tsohon: *222*PIN#")
+            st.caption("Old: *222*PIN#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -524,7 +524,7 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
             st.markdown("**Check Data Balance**")
             st.code("*323#", language="text")
-            st.caption("Tsohon: *228#")
+            st.caption("Old: *228#")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
@@ -534,41 +534,41 @@ elif st.session_state.page == "ussd":
 
 elif st.session_state.page == "kyc":
     st.subheader("KYC Verification")
-    st.markdown("**Dole ne ka cika wannan don amfani da services - CBN Regulation**")
+    st.markdown("**Complete this to access services - CBN Regulation**")
     
     if st.session_state.kyc_status == "approved":
-        st.success("KYC dinka an amince da shi. Za ka iya amfani da duk services")
+        st.success("Your KYC has been approved. You can access all services")
         st.json(st.session_state.user_data)
     elif st.session_state.kyc_status == "submitted":
-        st.warning("An karbi bayanan ka. Muna duba KYC dinka. Za mu tuntube ka cikin 24 hours.")
+        st.warning("We received your details. We are reviewing your KYC. We will contact you within 24 hours.")
     else:
         with st.form("kyc_form"):
             st.markdown("#### 1. Personal Information")
-            full_name = st.text_input("Cikakken Suna *", placeholder="Jamilu Sani")
+            full_name = st.text_input("Full Name *", placeholder="Jamilu Sani")
             email = st.text_input("Email Address *", placeholder="example@gmail.com")
             phone = st.text_input("Phone Number *", placeholder="07062589825", max_chars=11)
-            dob = st.date_input("Ranar Haihuwa *")
+            dob = st.date_input("Date of Birth *")
             
             st.markdown("#### 2. Identity Verification")
-            id_type = st.selectbox("Nau'in ID *", ["NIN", "BVN", "Voter's Card", "Driver's License", "International Passport"])
+            id_type = st.selectbox("ID Type *", ["NIN", "BVN", "Voter's Card", "Driver's License", "International Passport"])
             id_number = st.text_input(f"{id_type} Number *", placeholder="12345678901")
             
             st.markdown("#### 3. Address")
-            address = st.text_area("Cikakken Address *", placeholder="NO.278, LAYIN MAI UNGUWA KANO SAUNA")
+            address = st.text_area("Full Address *", placeholder="NO.278, LAYIN MAI UNGUWA KANO SAUNA")
             state = st.selectbox("State *", ["Kano", "Lagos", "Abuja", "Kaduna", "Rivers", "Oyo", "Others"])
             lga = st.text_input("LGA *", placeholder="Kano Municipal")
             
             st.markdown("#### 4. Upload ID Document")
-            uploaded_file = st.file_uploader("Hoton ID dinka *", type=["png", "jpg", "jpeg"])
+            uploaded_file = st.file_uploader("Upload ID Photo *", type=["png", "jpg", "jpeg"])
             
             st.markdown("---")
-            agree = st.checkbox("Na yarda cewa bayanan nan daidai ne *")
+            agree = st.checkbox("I confirm that the information provided is accurate *")
             
             submitted = st.form_submit_button("Submit KYC", type="primary", use_container_width=True)
             
             if submitted:
                 if not all([full_name, email, phone, id_number, address, lga, uploaded_file, agree]):
-                    st.error("Dole ka cika duka filin da *")
+                    st.error("All fields marked * are required")
                 else:
                     st.session_state.user_data = {
                         "full_name": full_name,
@@ -583,20 +583,20 @@ elif st.session_state.page == "kyc":
                         "submitted_date": str(datetime.now())
                     }
                     st.session_state.kyc_status = "submitted"
-                    st.success("An karbi KYC dinka! Muna duba shi. Za mu tuntube ka cikin 24 hours.")
+                    st.success("KYC submitted! We are reviewing it. We will contact you within 24 hours.")
                     st.balloons()
                     st.rerun()
 
 elif st.session_state.page == "admin":
     st.subheader("Admin Panel - J.S.GLOBAL")
-    admin_pass = st.text_input("Shigar da Admin Password", type="password")
+    admin_pass = st.text_input("Enter Admin Password", type="password")
     
     if admin_pass == "Jamilu123":
         st.success("Welcome CEO Jamilu")
         
         st.markdown("### Pending KYC Requests")
         if st.session_state.kyc_status == "submitted":
-            st.write("**Suna:**", st.session_state.user_data.get("full_name"))
+            st.write("**Name:**", st.session_state.user_data.get("full_name"))
             st.write("**NIN/BVN:**", st.session_state.user_data.get("id_number"))
             st.write("**Phone:**", st.session_state.user_data.get("phone"))
             st.write("**Address:**", st.session_state.user_data.get("address"))
@@ -605,14 +605,14 @@ elif st.session_state.page == "admin":
             with col1:
                 if st.button("Approve KYC", type="primary"):
                     st.session_state.kyc_status = "approved"
-                    st.success("KYC Approved! Customer zai iya amfani da services yanzu")
+                    st.success("KYC Approved! Customer can now access services")
                     st.rerun()
             with col2:
                 if st.button("Reject KYC"):
                     st.session_state.kyc_status = "pending"
                     st.error("KYC Rejected")
         else:
-            st.info("Babu Pending KYC tukuna")
+            st.info("No pending KYC requests")
             
         st.markdown("---")
         st.markdown("### Wallet Balance")
@@ -652,7 +652,7 @@ elif st.session_state.page == "profile":
 
 elif st.session_state.page == "airtime":
     if st.session_state.kyc_status != "approved":
-        st.error("Dole ka kammala KYC tukuna. Je zuwa Menu > KYC Verification")
+        st.error("Complete KYC first. Go to Menu > KYC Verification")
         if st.button("Go to KYC"):
             st.session_state.page = "kyc"
             st.rerun()
@@ -663,30 +663,30 @@ elif st.session_state.page == "airtime":
             if net_response.status_code == 200:
                 networks = net_response.json().get("data", [])
                 network_options = {net["name"]: net["id"] for net in networks}
-                selected_network_name = st.selectbox("Zaɓi Network", list(network_options.keys()))
+                selected_network_name = st.selectbox("Select Network", list(network_options.keys()))
                 selected_network_id = network_options[selected_network_name]
-                amount = st.number_input("Nawa Airtime?", min_value=50, max_value=50000, step=50)
-                phone_number = st.text_input("Lambar Wayar", placeholder="08012345678", max_chars=11)
+                amount = st.number_input("Amount", min_value=50, max_value=50000, step=50)
+                phone_number = st.text_input("Phone Number", placeholder="08012345678", max_chars=11)
                 
-                if st.button("Saya Airtime Yanzu", type="primary", use_container_width=True):
+                if st.button("Buy Airtime Now", type="primary", use_container_width=True):
                     if len(phone_number) == 11:
                         payload = {"network": selected_network_id, "amount": amount, "mobile_number": phone_number, "Ported_number": True}
                         buy_response = requests.post(BASE_URL + "/airtime/purchase", headers=headers, json=payload)
                         if buy_response.status_code == 200:
-                            st.success(f"An saida airtime N{amount} zuwa {phone_number}")
+                            st.success(f"Airtime N{amount} sent to {phone_number}")
                             st.balloons()
                         else:
                             st.error(f"Error: {buy_response.text}")
                     else:
-                        st.error("Lambar waya ba daidai ba")
+                        st.error("Invalid phone number")
             else:
-                st.error("An samu matsala wajen dauko networks")
+                st.error("Error fetching networks")
         except Exception as e:
-            st.error(f"Matsala: {e}")
+            st.error(f"Error: {e}")
 
 elif st.session_state.page == "data":
     if st.session_state.kyc_status != "approved":
-        st.error("Dole ka kammala KYC tukuna")
+        st.error("Complete KYC first")
         if st.button("Go to KYC"):
             st.session_state.page = "kyc"
             st.rerun()
@@ -697,38 +697,38 @@ elif st.session_state.page == "data":
             if net_response.status_code == 200:
                 networks = net_response.json().get("data", [])
                 network_options = {net["name"]: net["id"] for net in networks}
-                selected_network_name = st.selectbox("Zaɓi Network", list(network_options.keys()))
+                selected_network_name = st.selectbox("Select Network", list(network_options.keys()))
                 selected_network_id = network_options[selected_network_name]
                 
                 plan_response = requests.get(BASE_URL + "/data/plans/" + str(selected_network_id), headers=headers)
                 if plan_response.status_code == 200:
                     plans = plan_response.json().get("data", [])
                     plan_options = {f"{p['name']} - N{p['price']}": p["id"] for p in plans}
-                    selected_plan_name = st.selectbox("Zaɓi Data Plan", list(plan_options.keys()))
+                    selected_plan_name = st.selectbox("Select Data Plan", list(plan_options.keys()))
                     selected_plan_id = plan_options[selected_plan_name]
-                    phone_number = st.text_input("Lambar Wayar", placeholder="08012345678", max_chars=11)
+                    phone_number = st.text_input("Phone Number", placeholder="08012345678", max_chars=11)
                     
-                    if st.button("Saya Data Yanzu", type="primary", use_container_width=True):
+                    if st.button("Buy Data Now", type="primary", use_container_width=True):
                         if len(phone_number) == 11:
                             payload = {"network": selected_network_id, "plan": selected_plan_id, "mobile_number": phone_number, "Ported_number": True}
                             buy_response = requests.post(BASE_URL + "/data/purchase", headers=headers, json=payload)
                             if buy_response.status_code == 200:
-                                st.success(f"An saida {selected_plan_name} zuwa {phone_number}")
+                                st.success(f"{selected_plan_name} sent to {phone_number}")
                                 st.balloons()
                             else:
                                 st.error(f"Error: {buy_response.text}")
                         else:
-                            st.error("Lambar waya ba daidai ba")
+                            st.error("Invalid phone number")
                 else:
-                    st.error("An samu matsala wajen dauko data plans")
+                    st.error("Error fetching data plans")
             else:
-                st.error("An samu matsala wajen dauko networks")
+                st.error("Error fetching networks")
         except Exception as e:
-            st.error(f"Matsala: {e}")
+            st.error(f"Error: {e}")
 
 elif st.session_state.page == "cable":
     if st.session_state.kyc_status != "approved":
-        st.error("Dole ka kammala KYC tukuna")
+        st.error("Complete KYC first")
     else:
         st.subheader("Pay DSTV / GOTV / Startimes")
         try:
@@ -736,7 +736,7 @@ elif st.session_state.page == "cable":
             if cable_response.status_code == 200:
                 providers = cable_response.json().get("data", [])
                 provider_options = {p["name"]: p["id"] for p in providers}
-                selected_provider_name = st.selectbox("Zaɓi TV", list(provider_options.keys()))
+                selected_provider_name = st.selectbox("Select TV", list(provider_options.keys()))
                 selected_provider_id = provider_options[selected_provider_name]
                 
                 smartcard_number = st.text_input("Smartcard / IUC Number")
@@ -746,24 +746,43 @@ elif st.session_state.page == "cable":
                     if plan_response.status_code == 200:
                         plans = plan_response.json().get("data", [])
                         plan_options = {f"{p['name']} - N{p['price']}": p["id"] for p in plans}
-                        selected_plan_name = st.selectbox("Zaɓi Package", list(plan_options.keys()))
+                        selected_plan_name = st.selectbox("Select Package", list(plan_options.keys()))
                         selected_plan_id = plan_options[selected_plan_name]
                         
-                        if st.button("Biya Cable Yanzu", type="primary", use_container_width=True):
+                        if st.button("Pay Cable Now", type="primary", use_container_width=True):
                             payload = {"provider": selected_provider_id, "plan": selected_plan_id, "smartcard_number": smartcard_number}
                             buy_response = requests.post(BASE_URL + "/cable/purchase", headers=headers, json=payload)
                             if buy_response.status_code == 200:
-                                st.success(f"An biya {selected_plan_name} na {smartcard_number}")
+                                st.success(f"Paid {selected_plan_name} for {smartcard_number}")
                                 st.balloons()
                             else:
                                 st.error(f"Error: {buy_response.text}")
         except Exception as e:
-            st.error(f"Matsala: {e}")
+            st.error(f"Error: {e}")
 
 elif st.session_state.page == "electricity":
     if st.session_state.kyc_status != "approved":
-        st.error("Dole ka kammala KYC tukuna")
+        st.error("Complete KYC first")
     else:
         st.subheader("Pay Electricity Bill")
         try:
             elec_response = requests.get(BASE_URL + "/electricity/discos", headers=headers)
+            if elec_response.status_code == 200:
+                discos = elec_response.json().get("data", [])
+                disco_options = {d["name"]: d["id"] for d in discos}
+                selected_disco_name = st.selectbox("Select Disco", list(disco_options.keys()))
+                selected_disco_id = disco_options[selected_disco_name]
+                
+                meter_number = st.text_input("Meter Number")
+                meter_type = st.selectbox("Meter Type", ["Prepaid", "Postpaid"])
+                amount = st.number_input("Amount", min_value=100, max_value=50000, step=100)
+                
+                if st.button("Pay Electricity Now", type="primary", use_container_width=True):
+                    payload = {"disco": selected_disco_id, "meter_number": meter_number, "meter_type": meter_type.lower(), "amount": amount}
+                    buy_response = requests.post(BASE_URL + "/electricity/purchase", headers=headers, json=payload)
+                    if buy_response.status_code == 200:
+                        st.success(f"Paid N{amount} for meter {meter_number}")
+                        st.balloons()
+                        token = buy_response.json().get("token", "")
+                        if token:
+                            st.code(f
