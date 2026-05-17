@@ -162,18 +162,17 @@ if st.session_state.page != "dashboard":
         st.rerun()
     st.markdown("---")
 
-# KYC WARNING
-if st.session_state.kyc_status == "pending" and st.session_state.page == "dashboard":
-    st.markdown('<div class="kyc-warning">', unsafe_allow_html=True)
-    st.warning("KYC Required: Ka kammala KYC Verification don amfani da duk services.")
-    if st.button("Verify KYC Now", type="primary"):
-        st.session_state.page = "kyc"
-        st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
-    st.write("")
-
 # DASHBOARD
 if st.session_state.page == "dashboard":
+    if st.session_state.kyc_status == "pending":
+        st.markdown('<div class="kyc-warning">', unsafe_allow_html=True)
+        st.warning("KYC Required: Ka kammala KYC Verification don amfani da duk services.")
+        if st.button("Verify KYC Now", type="primary"):
+            st.session_state.page = "kyc"
+            st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+        st.write("")
+
     st.markdown('<div class="wallet-container">', unsafe_allow_html=True)
     st.markdown("##### WALLET BALANCE")
     col1, col2, col3 = st.columns([6,1,1])
@@ -326,31 +325,6 @@ elif st.session_state.page == "ussd":
             if st.button("Copy", key="mtn_borrow"):
                 copy_code("*303#")
             st.markdown("</div>", unsafe_allow_html=True)
-        
-        col1, col2 = st.columns([3,1])
-        with col1:
-            st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-            st.markdown("**Share Data/Airtime**")
-            st.code("*321#", language="text")
-            st.caption("Tsohon: *131*7#")
-            st.markdown("</div>", unsafe_allow_html=True)
-        with col2:
-            st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
-            if st.button("Copy", key="mtn_share"):
-                copy_code("*321#")
-            st.markdown("</div>", unsafe_allow_html=True)
-        
-        col1, col2 = st.columns([3,1])
-        with col1:
-            st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-            st.markdown("**Link NIN**")
-            st.code("*996#", language="text")
-            st.markdown("</div>", unsafe_allow_html=True)
-        with col2:
-            st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
-            if st.button("Copy", key="mtn_nin"):
-                copy_code("*996#")
-            st.markdown("</div>", unsafe_allow_html=True)
     
     with tab2:
         st.markdown("### 🟢 GLO USSD Codes - 2026")
@@ -461,19 +435,6 @@ elif st.session_state.page == "ussd":
             if st.button("Copy", key="airtel_data_bal"):
                 copy_code("*323#")
             st.markdown("</div>", unsafe_allow_html=True)
-        
-        col1, col2 = st.columns([3,1])
-        with col1:
-            st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-            st.markdown("**Borrow Airtime/Data**")
-            st.code("*303#", language="text")
-            st.caption("Tsohon: *500#")
-            st.markdown("</div>", unsafe_allow_html=True)
-        with col2:
-            st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
-            if st.button("Copy", key="airtel_borrow"):
-                copy_code("*303#")
-            st.markdown("</div>", unsafe_allow_html=True)
     
     with tab4:
         st.markdown("### 🟡 9MOBILE USSD Codes - 2026")
@@ -528,18 +489,6 @@ elif st.session_state.page == "ussd":
             st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
             if st.button("Copy", key="9mobile_data_bal"):
                 copy_code("*323#")
-            st.markdown("</div>", unsafe_allow_html=True)
-        
-        col1, col2 = st.columns([3,1])
-        with col1:
-            st.markdown('<div class="ussd-card">', unsafe_allow_html=True)
-            st.markdown("**Borrow Airtime/Data**")
-            st.code("*303#", language="text")
-            st.markdown("</div>", unsafe_allow_html=True)
-        with col2:
-            st.markdown('<div class="copy-btn">', unsafe_allow_html=True)
-            if st.button("Copy", key="9mobile_borrow"):
-                copy_code("*303#")
             st.markdown("</div>", unsafe_allow_html=True)
     
     st.markdown("---")
@@ -805,4 +754,41 @@ elif st.session_state.page == "electricity":
             disco_response = requests.get(BASE_URL + "/electricity/discos", headers=headers)
             if disco_response.status_code == 200:
                 discos = disco_response.json().get("data", [])
-                disco_options = {d["name"]: d["id"] for d in discos
+                disco_options = {d["name"]: d["id"] for d in discos}
+                selected_disco_name = st.selectbox("Zaɓi Kamfanin NEPA", list(disco_options.keys()))
+                selected_disco_id = disco_options[selected_disco_name]
+                
+                meter_type = st.selectbox("Meter Type", ["prepaid", "postpaid"])
+                meter_number = st.text_input("Meter Number")
+                amount = st.number_input("Nawa Za Ka Biya?", min_value=500, step=100)
+                
+                if st.button("Duba Sunan Mai Meter"):
+                    if meter_number:
+                        verify_payload = {"disco": selected_disco_id, "meter_number": meter_number, "meter_type": meter_type}
+                        verify_response = requests.post(BASE_URL + "/electricity/verify", headers=headers, json=verify_payload)
+                        if verify_response.status_code == 200:
+                            customer_name = verify_response.json().get("data", {}).get("name", "N/A")
+                            st.session_state.electricity_customer = customer_name
+                            st.info(f"Sunan Mai Meter: {customer_name}")
+                        else:
+                            st.error("Ba a sami sunan ba")
+                
+                if "electricity_customer" in st.session_state:
+                    if st.button("Biya Kudin Wuta Yanzu", type="primary", use_container_width=True):
+                        pay_payload = {"disco": selected_disco_id, "meter_number": meter_number, "meter_type": meter_type, "amount": amount}
+                        pay_response = requests.post(BASE_URL + "/electricity/purchase", headers=headers, json=pay_payload)
+                        if pay_response.status_code == 200:
+                            token = pay_response.json().get("data", {}).get("token", "N/A")
+                            st.success(f"An biya! Token: {token}")
+                            st.balloons()
+                        else:
+                            st.error(f"Error: {pay_response.text}")
+            else:
+                st.error("An samu matsala wajen dauko discos")
+        except Exception as e:
+            st.error(f"Matsala: {e}")
+
+# HISTORY PAGE
+elif st.session_state.page == "history":
+    st.subheader("Transaction History")
+    st.info("Za a nuna tarihin cinikayyarka anan. API endpoint na history ba a haɗa ba tukuna.")
