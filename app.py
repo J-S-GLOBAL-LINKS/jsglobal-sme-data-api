@@ -739,4 +739,31 @@ elif st.session_state.page == "cable":
                 selected_provider_name = st.selectbox("Zaɓi TV", list(provider_options.keys()))
                 selected_provider_id = provider_options[selected_provider_name]
                 
-                smartcard_number = st.text_input("Smart
+                smartcard_number = st.text_input("Smartcard / IUC Number")
+                
+                if smartcard_number:
+                    plan_response = requests.get(BASE_URL + f"/cable/plans/{selected_provider_id}", headers=headers)
+                    if plan_response.status_code == 200:
+                        plans = plan_response.json().get("data", [])
+                        plan_options = {f"{p['name']} - N{p['price']}": p["id"] for p in plans}
+                        selected_plan_name = st.selectbox("Zaɓi Package", list(plan_options.keys()))
+                        selected_plan_id = plan_options[selected_plan_name]
+                        
+                        if st.button("Biya Cable Yanzu", type="primary", use_container_width=True):
+                            payload = {"provider": selected_provider_id, "plan": selected_plan_id, "smartcard_number": smartcard_number}
+                            buy_response = requests.post(BASE_URL + "/cable/purchase", headers=headers, json=payload)
+                            if buy_response.status_code == 200:
+                                st.success(f"An biya {selected_plan_name} na {smartcard_number}")
+                                st.balloons()
+                            else:
+                                st.error(f"Error: {buy_response.text}")
+        except Exception as e:
+            st.error(f"Matsala: {e}")
+
+elif st.session_state.page == "electricity":
+    if st.session_state.kyc_status != "approved":
+        st.error("Dole ka kammala KYC tukuna")
+    else:
+        st.subheader("Pay Electricity Bill")
+        try:
+            elec_response = requests.get(BASE_URL + "/electricity/discos", headers=headers)
