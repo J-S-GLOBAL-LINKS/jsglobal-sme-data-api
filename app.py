@@ -1,23 +1,17 @@
 import streamlit as st
 import requests
 from datetime import datetime
+import random
+import string
 
 st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="📱", layout="wide")
 
 st.markdown("""
 <style>
-[data-testid="stAppViewContainer"] {
-    background-color: #ffffff;
-}
-[data-testid="stHeader"] {
-    background-color: #0d47a1;
-}
-[data-testid="stSidebar"] {
-    background-color: #0d47a1;
-}
-[data-testid="stSidebar"] * {
-    color: white;
-}
+[data-testid="stAppViewContainer"] {background-color: #ffffff;}
+[data-testid="stHeader"] {background-color: #0d47a1;}
+[data-testid="stSidebar"] {background-color: #0d47a1;}
+[data-testid="stSidebar"] * {color: white;}
 .cac-banner {
     background: #0d47a1;
     color: white;
@@ -25,7 +19,7 @@ st.markdown("""
     text-align: center;
     font-weight: bold;
     margin: -1rem -1rem 1rem -1rem;
-    font-size: 14px;
+    font-size: 13px;
 }
 .main-header {
     background: #0d47a1;
@@ -58,17 +52,27 @@ st.markdown("""
     border: 1px solid #1976d2;
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
-.upgrade-card {
-    background-color: #e3f2fd;
+.bank-card {
+    background-color: #fff3e0;
     padding: 15px;
     border-radius: 10px;
-    border-left: 4px solid #1976d2;
+    border-left: 4px solid #ff9800;
     margin: 1rem 0;
 }
 </style>
 """, unsafe_allow_html=True)
 
+# SECRETS
 api_key = st.secrets["SMEPLUG_API_KEY"]
+PAYSTACK_SECRET = st.secrets.get("PAYSTACK_SECRET_KEY", "")
+PAYSTACK_PUBLIC = st.secrets.get("PAYSTACK_PUBLIC_KEY", "")
+SMS_API_KEY = st.secrets.get("TERMII_API_KEY", "")
+
+# BANK DETAILS NA J.S.GLOBAL LINKS - KA CANZA WANNAN
+COMPANY_BANK_NAME = "Access Bank"
+COMPANY_ACCOUNT_NUMBER = "1234567890"  # SA ACCOUNT DINKA ANAN
+COMPANY_ACCOUNT_NAME = "J.S.GLOBAL LINKS AND SERVICES"
+
 BASE_URL = "https://smeplug.ng/api/v1"
 headers = {
     "Authorization": "Bearer " + api_key,
@@ -81,22 +85,43 @@ if "show_balance" not in st.session_state:
     st.session_state.show_balance = True
 if "kyc_status" not in st.session_state:
     st.session_state.kyc_status = "pending"
-if "search_query" not in st.session_state:
-    st.session_state.search_query = ""
+if "commission" not in st.session_state:
+    st.session_state.commission = "150.00"
 
-try:
-    response = requests.get(BASE_URL + "/account/balance", headers=headers, timeout=10)
-    if response.status_code == 200:
-        balance = response.json().get("balance", "0")
-    else:
-        balance = "0"
-except Exception:
-    balance = "0"
+def get_balance():
+    try:
+        response = requests.get(BASE_URL + "/account/balance", headers=headers, timeout=10)
+        if response.status_code == 200:
+            return response.json().get("balance", "0")
+        return "0"
+    except:
+        return "0"
 
-# CAC BANNER - YANA KAN KO WANE PAGE
-st.markdown("""
+def generate_ref():
+    return 'JSG' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+
+def send_sms(to, message):
+    try:
+        if SMS_API_KEY:
+            url = "https://api.ng.termii.com/api/sms/send"
+            payload = {
+                "to": to,
+                "from": "JSGLOBAL",
+                "sms": message,
+                "type": "plain",
+                "channel": "generic",
+                "api_key": SMS_API_KEY
+            }
+            requests.post(url, json=payload, timeout=10)
+    except:
+        pass
+
+balance = get_balance()
+
+# CAC + BANK BANNER
+st.markdown(f"""
 <div class="cac-banner">
-    J.S.GLOBAL LINKS AND SERVICES | CAC: RC 8984371 | Kano, Nigeria | 07062589825
+    J.S.GLOBAL LINKS AND SERVICES | CAC: RC 8984371 | {COMPANY_BANK_NAME}: {COMPANY_ACCOUNT_NUMBER} | 07062589825
 </div>
 """, unsafe_allow_html=True)
 
@@ -115,6 +140,7 @@ with st.sidebar:
     
     menu_items = {
         "dashboard": "🏠 Dashboard",
+        "fund": "💳 Fund Wallet",
         "airtime": "📱 Buy Airtime",
         "data": "🌐 Buy Data", 
         "cable": "📺 CableTV Subscription",
@@ -138,59 +164,55 @@ with st.sidebar:
     st.markdown("---")
     st.caption("J.S.GLOBAL LINKS AND SERVICES")
     st.caption("RC: 8984371")
+    st.caption(f"{COMPANY_BANK_NAME}")
+    st.caption(f"Acct: {COMPANY_ACCOUNT_NUMBER}")
     st.caption("Kano, Nigeria | 07062589825")
 
 # HEADER
-if st.session_state.page == "all_services":
-    st.markdown("""
-    <div class="main-header">
-        <div style="font-size: 18px; font-weight: 600;">All Services</div>
-        <div>Close</div>
-    </div>
-    """, unsafe_allow_html=True)
-else:
-    st.markdown("""
-    <div class="main-header">
-        <div style="font-size: 18px; font-weight: 600;">☰ Dashboard</div>
-        <div>🔔</div>
-    </div>
-    """, unsafe_allow_html=True)
+st.markdown("""
+<div class="main-header">
+    <div style="font-size: 18px; font-weight: 600;">☰ Dashboard</div>
+    <div>🔔</div>
+</div>
+""", unsafe_allow_html=True)
 
-# ALL SERVICES PAGE
-if st.session_state.page == "all_services":
-    search = st.text_input("", placeholder="🔍 Search", key="search_input", label_visibility="collapsed")
-    st.session_state.search_query = search.lower()
-    
-    if st.button("← Back to Dashboard", key="back_from_all"):
+# FUND WALLET PAGE - DA BANK DETAILS
+if st.session_state.page == "fund":
+    if st.button("← Back"): 
         st.session_state.page = "dashboard"
         st.rerun()
+    st.subheader("Fund Wallet")
     
-    st.write("")
+    tab1, tab2 = st.tabs(["🏦 Bank Transfer", "💳 Paystack Card"])
     
-    all_services = [
-        {"name": "Airtime", "icon": "📱", "key": "airtime"},
-        {"name": "Data", "icon": "🌐", "key": "data"},
-        {"name": "Cable TV", "icon": "📺", "key": "cable"},
-        {"name": "Electricity", "icon": "⚡", "key": "electricity"},
-        {"name": "Print Recharge", "icon": "🖨️", "key": "print"},
-        {"name": "Fund Betting", "icon": "🎲", "key": "betting"},
-        {"name": "Transfer Money", "icon": "💸", "key": "transfer"},
-        {"name": "Withdraw Commission", "icon": "💰", "key": "withdraw"},
-        {"name": "WAEC ePIN", "icon": "📝", "key": "waec"},
-        {"name": "JAMB ePIN", "icon": "📝", "key": "jamb"},
-        {"name": "Smile Internet", "icon": "📡", "key": "smile"}
-    ]
+    with tab1:
+        st.markdown(f"""
+        <div class="bank-card">
+            <div style='font-weight: bold; font-size: 16px; color: #e65100; margin-bottom: 10px;'>J.S.GLOBAL LINKS BANK DETAILS</div>
+            <div style='font-size: 14px; line-height: 1.8;'>
+                <b>Bank Name:</b> {COMPANY_BANK_NAME}<br>
+                <b>Account Number:</b> {COMPANY_ACCOUNT_NUMBER}<br>
+                <b>Account Name:</b> {COMPANY_ACCOUNT_NAME}<br>
+                <b>CAC Number:</b> RC 8984371
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        st.warning("After payment, send proof to WhatsApp: 07062589825 for instant credit")
+        amount = st.number_input("Amount You Sent (₦)", min_value=100, key="bank_amount")
+        if st.button("I Have Paid - Notify Admin", type="primary", use_container_width=True):
+            send_sms("07062589825", f"ALERT: Customer paid ₦{amount} to {COMPANY_BANK_NAME}. Verify and credit.")
+            st.success("Admin notified! Your wallet will be credited in 5 minutes")
     
-    filtered_services = [s for s in all_services if st.session_state.search_query in s["name"].lower()]
-    
-    cols = st.columns(3)
-    for idx, service in enumerate(filtered_services):
-        with cols[idx % 3]:
-            st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-            if st.button(f"{service['icon']}\n\n{service['name']}", key=f"all_{service['key']}", use_container_width=True):
-                st.session_state.page = service['key']
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+    with tab2:
+        st.info("Pay with ATM Card, Bank Transfer, or USSD via Paystack")
+        with st.form("paystack_form"):
+            email = st.text_input("Email", placeholder="your@email.com")
+            amount = st.number_input("Amount (₦)", min_value=100, value=1000, key="ps_amount")
+            if st.form_submit_button("Pay Now", type="primary", use_container_width=True):
+                ref = generate_ref()
+                paystack_url = f"https://paystack.com/pay/jsglobal?email={email}&amount={amount*100}&reference={ref}"
+                st.success(f"[Click Here to Pay ₦{amount}]({paystack_url})")
+                st.code(f"Reference: {ref}")
 
 # DASHBOARD PAGE
 elif st.session_state.page == "dashboard":
@@ -198,7 +220,7 @@ elif st.session_state.page == "dashboard":
     <div class="wallet-card">
         <div style='display: flex; justify-content: space-between; margin-bottom: 10px;'>
             <div style='font-size: 13px; opacity: 0.9;'>WALLET BALANCE</div>
-            <div style='font-size: 12px;'>1 of 2 ></div>
+            <div style='font-size: 12px;'>Commission: ₦{st.session_state.commission}</div>
         </div>
         <div style='font-size: 32px; font-weight: bold; margin-bottom: 15px;'>{f'₦{balance}' if st.session_state.show_balance else '******'}</div>
     """, unsafe_allow_html=True)
@@ -206,7 +228,8 @@ elif st.session_state.page == "dashboard":
     col1, col2, col3 = st.columns([3,1,3])
     with col1:
         if st.button("+ Fund Wallet", use_container_width=True):
-            st.info("Contact: 07062589825 to fund wallet")
+            st.session_state.page = "fund"
+            st.rerun()
     with col3:
         if st.button("👁️" if st.session_state.show_balance else "👁️‍🗨️", key="toggle_bal"):
             st.session_state.show_balance = not st.session_state.show_balance
@@ -214,131 +237,82 @@ elif st.session_state.page == "dashboard":
     
     st.markdown("</div>", unsafe_allow_html=True)
     
-    st.markdown("""
-    <div class="upgrade-card">
-        <div style='display: flex; justify-content: space-between; align-items: center;'>
-            <div>
-                <div style='font-weight: bold; color: #0d47a1; font-size: 15px;'>Upgrade Membership</div>
-                <div style='font-size: 12px; color: #555;'>Unlock more discounts and other benefits</div>
-            </div>
-            <div style='color: #0d47a1; font-size: 20px;'>›</div>
+    # Bank details card
+    st.markdown(f"""
+    <div class="bank-card">
+        <div style='font-weight: bold; color: #e65100;'>💰 FUND VIA BANK TRANSFER</div>
+        <div style='font-size: 13px; margin-top: 5px;'>
+            <b>{COMPANY_BANK_NAME}</b> | {COMPANY_ACCOUNT_NUMBER} | {COMPANY_ACCOUNT_NAME}
         </div>
+    </div>
     """, unsafe_allow_html=True)
     
     col1, col2 = st.columns([3,1])
     with col1:
         st.markdown("### What would you like to do?")
     with col2:
-        if st.button("See all ›", key="see_all_btn"):
+        if st.button("See all ›"):
             st.session_state.page = "all_services"
             st.rerun()
     
     if st.session_state.kyc_status == "pending":
         st.warning("KYC Required: Go to Menu > KYC Verification to access all services")
     
+    # Services grid - kamar da
     col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("📱\n\nAirtime", key="srv_airtime", use_container_width=True):
-            st.session_state.page = "airtime"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col2:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("🌐\n\nData", key="srv_data", use_container_width=True):
-            st.session_state.page = "data"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col3:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("📺\n\nCable\nTV", key="srv_cable", use_container_width=True):
-            st.session_state.page = "cable"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col4:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("⚡\n\nElectricity", key="srv_electric", use_container_width=True):
-            st.session_state.page = "electricity"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+    services = [
+        ("📱\n\nAirtime", "airtime"),
+        ("🌐\n\nData", "data"),
+        ("📺\n\nCable\nTV", "cable"),
+        ("⚡\n\nElectricity", "electricity"),
+        ("🖨️\n\nPrint\nRecharge", "print"),
+        ("🎲\n\nFund\nBetting", "betting"),
+        ("💸\n\nTransfer\nMoney", "transfer"),
+        ("💰\n\nWithdraw\nCommission", "withdraw"),
+        ("📝\n\nWAEC\nePIN", "waec"),
+        ("📝\n\nJAMB\nePIN", "jamb"),
+        ("📡\n\nSmile\nInternet", "smile")
+    ]
     
-    st.write("")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("🖨️\n\nPrint\nRecharge", key="srv_print", use_container_width=True):
-            st.info("Coming Soon")
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col2:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("🎲\n\nFund\nBetting", key="srv_betting", use_container_width=True):
-            st.info("Coming Soon")
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col3:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("💸\n\nTransfer\nMoney", key="srv_transfer", use_container_width=True):
-            st.info("Coming Soon")
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col4:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("💰\n\nWithdraw\nCommission", key="srv_withdraw", use_container_width=True):
-            st.info("Coming Soon")
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.write("")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("📝\n\nWAEC\nePIN", key="srv_waec", use_container_width=True):
-            st.session_state.page = "waec"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col2:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("📝\n\nJAMB\nePIN", key="srv_jamb", use_container_width=True):
-            st.session_state.page = "jamb"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col3:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("📡\n\nSmile\nInternet", key="srv_smile", use_container_width=True):
-            st.info("Coming Soon")
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col4:
-        st.write("")
+    for i, (label, key) in enumerate(services):
+        col = [col1, col2, col3, col4][i % 4]
+        with col:
+            st.markdown('<div class="service-btn">', unsafe_allow_html=True)
+            if st.button(label, key=f"srv_{key}", use_container_width=True):
+                st.session_state.page = key
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+        if i % 4 == 3:
+            st.write("")
 
-# KYC PAGE
-elif st.session_state.page == "kyc":
-    if st.button("← Back"):
+# SAURAN PAGES - AIRTIME, DATA, ETC - DA SMS ALERT
+elif st.session_state.page == "airtime":
+    if st.button("← Back"): 
         st.session_state.page = "dashboard"
         st.rerun()
-    st.subheader("KYC Verification - J.S.GLOBAL LINKS")
-    st.markdown("**CAC: RC 8984371 | Complete this to access services**")
-    
-    if st.session_state.kyc_status == "approved":
-        st.success("Your KYC has been approved")
+    st.subheader("Buy Airtime")
+    if st.session_state.kyc_status != "approved":
+        st.error("Complete KYC first")
     else:
-        with st.form("kyc_form"):
-            full_name = st.text_input("Full Name *", placeholder="Jamilu Sani")
-            email = st.text_input("Email *", placeholder="example@gmail.com")
-            phone = st.text_input("Phone *", placeholder="07062589825", max_chars=11)
-            id_type = st.selectbox("ID Type *", ["NIN", "BVN", "Voter's Card"])
-            id_number = st.text_input(f"ID Number *")
-            address = st.text_area("Address *", placeholder="NO.278, LAYIN MAI UNGUWA KANO SAUNA")
-            uploaded_file = st.file_uploader("Upload ID *", type=["png", "jpg", "jpeg"])
-            agree = st.checkbox("I confirm information is accurate *")
-            
-            if st.form_submit_button("Submit KYC", type="primary", use_container_width=True):
-                if all([full_name, email, phone, id_number, address, uploaded_file, agree]):
-                    st.session_state.kyc_status = "submitted"
-                    st.success("KYC submitted! Contact 07062589825 for approval")
-                    st.rerun()
-                else:
-                    st.error("All fields are required")
+        with st.form("airtime_form"):
+            network = st.selectbox("Network", ["MTN", "Airtel", "Glo", "9mobile"])
+            phone = st.text_input("Phone Number", max_chars=11)
+            amount = st.number_input("Amount", min_value=50, max_value=50000)
+            if st.form_submit_button("Buy Airtime", type="primary", use_container_width=True):
+                payload = {"network": network, "phone": phone, "amount": amount, "ref": generate_ref()}
+                try:
+                    res = requests.post(BASE_URL + "/airtime/purchase", json=payload, headers=headers, timeout=30)
+                    if res.status_code == 200:
+                        st.success(f"Airtime ₦{amount} sent to {phone}")
+                        send_sms(phone, f"JSGLOBAL: You received ₦{amount} {network} airtime. CAC: RC8984371")
+                        send_sms("07062589825", f"SALE: ₦{amount} {network} to {phone}")
+                        st.balloons()
+                    else:
+                        st.error("Failed: " + res.text)
+                except Exception as e:
+                    st.error(f"Error: {e}")
 
-# ADMIN PAGE
+# ADMIN PAGE - DA BANK DETAILS EDIT
 elif st.session_state.page == "admin":
     if st.button("← Back"):
         st.session_state.page = "dashboard"
@@ -347,6 +321,12 @@ elif st.session_state.page == "admin":
     admin_pass = st.text_input("Enter Admin Password", type="password")
     if admin_pass == "Jamilu123":
         st.success("Welcome CEO Jamilu")
+        st.metric("Total Commission", f"₦{st.session_state.commission}")
+        
+        st.subheader("Company Bank Details")
+        st.info(f"Current: {COMPANY_BANK_NAME} - {COMPANY_ACCOUNT_NUMBER}")
+        st.caption("To change, edit COMPANY_BANK_NAME and COMPANY_ACCOUNT_NUMBER in code")
+        
         if st.session_state.kyc_status == "submitted":
             st.warning("Pending KYC Request")
             if st.button("Approve KYC", type="primary"):
@@ -358,13 +338,9 @@ elif st.session_state.page == "admin":
     elif admin_pass != "":
         st.error("Wrong Password")
 
-# Sauran pages
+# SAURAN PAGES KAMAR DA - DATA, CABLE, ETC
 else:
     if st.button("← Back to Dashboard"):
         st.session_state.page = "dashboard"
         st.rerun()
-    st.subheader(st.session_state.page.title())
-    if st.session_state.kyc_status != "approved":
-        st.error("Complete KYC first: Menu > KYC Verification")
-    else:
-        st.info(f"{st.session_state.page.title()} service - Coming Soon. Contact 07062589825")
+    st.info(f"{st.session_state.page.title()} service - Coming Soon")
