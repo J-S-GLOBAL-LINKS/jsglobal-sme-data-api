@@ -5,7 +5,22 @@ import random
 import string
 
 st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="📱", layout="wide")
-
+# PWA CODE - SA APP YA ZAMA INSTALLABLE
+st.markdown("""
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0d47a1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JSGLOBAL">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js');
+  });
+}
+</script>
+""", unsafe_allow_html=True)
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {background-color: #ffffff;}
