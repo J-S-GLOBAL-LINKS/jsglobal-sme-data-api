@@ -4,7 +4,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="logo.png", layout="wide")
 
-# CSS KAMAR HOTONKA
+# CSS
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -75,8 +75,6 @@ if "kyc_status" not in st.session_state:
     st.session_state.kyc_status = "pending"
 if "user_data" not in st.session_state:
     st.session_state.user_data = {}
-if "copied_code" not in st.session_state:
-    st.session_state.copied_code = ""
 
 # SAMO BALANCE
 try:
@@ -90,7 +88,10 @@ except Exception:
 
 def copy_code(code):
     st.session_state.copied_code = code
-    st.toast(f"Copied {code} - Liqa a wayarka!", icon="✅")
+    st.toast(f"Copied {code}", icon="✅")
+
+if "copied_code" not in st.session_state:
+    st.session_state.copied_code = ""
 
 # SIDEBAR
 with st.sidebar:
@@ -150,10 +151,10 @@ if st.session_state.page != "dashboard":
         st.rerun()
     st.markdown("---")
 
-# DASHBOARD - KAMAR HOTONKA 100%
+# DASHBOARD
 if st.session_state.page == "dashboard":
     
-    # BLUE HEADER KAMAR HOTON
+    # BLUE HEADER
     st.markdown(f"""
     <div style='background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 2rem; border-radius: 15px; color: white; margin-bottom: 1rem;'>
         <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;'>
@@ -167,7 +168,7 @@ if st.session_state.page == "dashboard":
     # FUND WALLET + REFRESH + EYE
     col1, col2, col3 = st.columns([3, 1, 3])
     with col1:
-        if st.button("➕ Fund Wallet", use_container_width=True, key="fund"):
+        if st.button("➕ Fund Wallet", use_container_width=True):
             st.info("Za a tura ka zuwa SMEPlug don cika wallet. Ko ka tuntube mu: 07062589825")
     with col2:
         if st.button("🔄", key="refresh"):
@@ -292,12 +293,11 @@ if st.session_state.page == "dashboard":
                 <div style='font-weight: bold; color: #1e3c72; font-size: 16px;'>Need Help?</div>
                 <div style='font-size: 13px; color: #5c6bc0;'>Try our self service or open a ticket</div>
             </div>
-        </div>
         <div style='font-size: 24px; color: #1e3c72;'>›</div>
     </div>
     """, unsafe_allow_html=True)
 
-# USSD CODES PAGE - SABBIN CODES NCC 2026
+# USSD CODES PAGE
 elif st.session_state.page == "ussd":
     st.subheader("USSD Codes - NCC 2026")
     st.success("Sabbin codes da NCC ta hada su daya ga duk networks")
@@ -782,5 +782,4 @@ elif st.session_state.page == "cable":
                             plan_response = requests.get(BASE_URL + "/cable/plans/" + str(selected_provider_id), headers=headers)
                             if plan_response.status_code == 200:
                                 plans = plan_response.json().get("data", [])
-                                plan_options = {f"{p['name']} - N{p['price']}": p["id"] for p in plans}
-                                st.session_state.cable_plans = plan_options
+                                plan_options = {f"{p['name']} - N{p
