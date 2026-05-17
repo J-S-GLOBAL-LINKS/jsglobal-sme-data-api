@@ -12,10 +12,7 @@ st.markdown("""
 [data-testid="stHeader"] {background-color: #0d47a1;}
 
 /* SIDEBAR KAMAR CLUBKONNECT */
-[data-testid="stSidebar"] {
-    background-color: white !important;
-    padding-top: 0rem;
-}
+[data-testid="stSidebar"] {background-color: white !important;}
 [data-testid="stSidebar"] .stButton > button {
     background-color: white !important;
     color: #333333 !important;
@@ -24,18 +21,11 @@ st.markdown("""
     text-align: left !important;
     padding: 12px 20px !important;
     border-radius: 0px !important;
-    justify-content: flex-start !important;
 }
 [data-testid="stSidebar"] .stButton > button:hover {
     background-color: #0d47a1 !important;
     color: white !important;
     border-radius: 0px 25px 25px 0px !important;
-}
-[data-testid="stSidebar"] .stButton > button:focus {
-    background-color: #0d47a1 !important;
-    color: white !important;
-    border-radius: 0px 25px 25px 0px !important;
-    box-shadow: none !important;
 }
 [data-testid="stSidebar"] * {color: #333333;}
 
@@ -69,11 +59,9 @@ st.markdown("""
     background-color: white;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     font-size: 14px;
     font-weight: 500;
     color: #333 !important;
-    padding: 15px 10px;
 }
 .bank-card {
     background-color: #fff3e0;
@@ -90,32 +78,15 @@ st.markdown("""
     padding: 12px !important;
     margin-top: 20px !important;
 }
-.help-btn {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    background-color: #00bcd4;
-    color: white;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    z-index: 999;
-}
 </style>
 """, unsafe_allow_html=True)
 
 api_key = st.secrets["SMEPLUG_API_KEY"]
 
-# BANK DETAILS NA J.S.GLOBAL LINKS - KA CANZA WANNAN
-COMPANY_BANK_NAME = "Access Bank"
-COMPANY_ACCOUNT_NUMBER = "1234567890"  # SA ACCOUNT DINKA
-COMPANY_ACCOUNT_NAME = "J.S.GLOBAL LINKS AND SERVICES"
+# SA BANK DINKA ANAN 👇👇👇
+COMPANY_BANK_NAME = "Access Bank"  
+COMPANY_ACCOUNT_NUMBER = "1234567890"  # CANZA WANNAN
+COMPANY_ACCOUNT_NAME = "J.S.GLOBAL LINKS AND SERVICES"  # CANZA WANNAN
 
 BASE_URL = "https://smeplug.ng/api/v1"
 headers = {"Authorization": "Bearer " + api_key, "Content-Type": "application/json"}
@@ -147,7 +118,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# SIDEBAR - KAMAR CLUBKONNECT
+# SIDEBAR
 with st.sidebar:
     st.markdown("<div style='padding: 15px; font-weight: bold; color: #666;'>MENU</div>", unsafe_allow_html=True)
     
@@ -180,13 +151,6 @@ with st.sidebar:
     st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown("<div style='text-align: center; color: #999; font-size: 12px; margin-top: 20px;'>J.S.GLOBAL v1.0</div>", unsafe_allow_html=True)
-
-# NEED HELP BUTTON
-st.markdown("""
-<div class="help-btn">
-    Need<br>Help?
-</div>
-""", unsafe_allow_html=True)
 
 # HEADER
 st.markdown("""
@@ -230,6 +194,9 @@ if st.session_state.page == "dashboard":
     
     st.markdown("### What would you like to do?")
     
+    if st.session_state.kyc_status == "pending":
+        st.warning("KYC Required: Go to Menu > KYC Verification to access all services")
+    
     services = [
         ("📱\n\nAirtime", "airtime"),
         ("🌐\n\nData", "data"),
@@ -270,9 +237,65 @@ elif st.session_state.page == "fund":
         </div>
     </div>
     """, unsafe_allow_html=True)
-    st.warning("After payment, send proof to WhatsApp: 07062589825 for instant credit")
+    st.success("After payment, send proof to WhatsApp: 07062589825 for instant credit")
 
-# SAURAN PAGES
+# KYC PAGE - YANZU YANA AIKI
+elif st.session_state.page == "kyc":
+    if st.button("← Back"):
+        st.session_state.page = "dashboard"
+        st.rerun()
+    st.subheader("KYC Verification - J.S.GLOBAL LINKS")
+    st.markdown("**CAC: RC 8984371 | Complete this to access services**")
+    
+    if st.session_state.kyc_status == "approved":
+        st.success("✅ Your KYC has been approved! You can now use all services")
+    elif st.session_state.kyc_status == "submitted":
+        st.info("⏳ Your KYC is pending admin approval. Contact: 07062589825")
+    else:
+        with st.form("kyc_form"):
+            st.write("**Personal Information**")
+            full_name = st.text_input("Full Name *", placeholder="Jamilu Sani")
+            email = st.text_input("Email *", placeholder="example@gmail.com")
+            phone = st.text_input("Phone *", placeholder="07062589825", max_chars=11)
+            id_type = st.selectbox("ID Type *", ["NIN", "BVN", "Voter's Card", "Driver's License"])
+            id_number = st.text_input(f"{id_type} Number *")
+            address = st.text_area("Residential Address *", placeholder="NO.278, LAYIN MAI UNGUWA KANO SAUNA")
+            uploaded_file = st.file_uploader("Upload ID Card *", type=["png", "jpg", "jpeg"])
+            agree = st.checkbox("I confirm all information is accurate *")
+            
+            if st.form_submit_button("Submit KYC", type="primary", use_container_width=True):
+                if all([full_name, email, phone, id_number, address, uploaded_file, agree]):
+                    st.session_state.kyc_status = "submitted"
+                    st.success("KYC submitted successfully! Admin will approve within 24hrs")
+                    st.balloons()
+                    st.rerun()
+                else:
+                    st.error("All fields marked * are required")
+
+# ADMIN PAGE
+elif st.session_state.page == "admin":
+    if st.button("← Back"):
+        st.session_state.page = "dashboard"
+        st.rerun()
+    st.subheader("Admin Panel - J.S.GLOBAL LINKS RC 8984371")
+    admin_pass = st.text_input("Enter Admin Password", type="password")
+    if admin_pass == "Jamilu123":
+        st.success("Welcome CEO Jamilu")
+        st.metric("Total Commission", f"₦{st.session_state.commission}")
+        st.info(f"Company Bank: {COMPANY_BANK_NAME} - {COMPANY_ACCOUNT_NUMBER}")
+        
+        if st.session_state.kyc_status == "submitted":
+            st.warning("⏳ Pending KYC Request")
+            if st.button("Approve KYC", type="primary"):
+                st.session_state.kyc_status = "approved"
+                st.success("KYC Approved!")
+                st.rerun()
+        else:
+            st.info("No pending KYC requests")
+    elif admin_pass != "":
+        st.error("Wrong Password")
+
+# SAURAN SERVICES
 else:
     if st.button("← Back to Dashboard"):
         st.session_state.page = "dashboard"
