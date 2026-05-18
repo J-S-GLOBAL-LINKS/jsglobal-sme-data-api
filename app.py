@@ -4,7 +4,7 @@ from datetime import datetime
 import random
 import string
 
-SMEPLUG API CONFIG
+#SMEPLUG API CONFIG
 SMEPLUG_BASE_URL = "https://smeplug.ng/api/v1"
 API_KEY = st.secrets["SMEPLUG_API_KEY"]
 
