@@ -106,7 +106,7 @@ menu = st.sidebar.radio(
         "Fita"
        ],
     label_visibility="collapsed"
-)    # ==== NUNA KOWANE PAGE BIYA MENU ====
+)   
     if menu == "Dashboard":
     st.markdown('<div class="wallet-card">', unsafe_allow_html=True)
     st.markdown("### Wallet Balance")
