@@ -97,7 +97,46 @@ if 'menu' not in st.session_state:
 
 menu = st.session_state.menu
     
-       
+if menu == "Dashboard":
+    # Logo + Wallet
+    st.image("logo.png", width=150)
+    st.markdown("### J.S GLOBAL LINKS")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("WALLET BALANCE", f"₦{st.session_state.wallet_balance:,}")
+    with col2:
+        st.metric("Commission", "₦150.00")
+
+    st.markdown("---")
+    st.subheader("What would you like to do?")
+
+    # ==== BUTTONS SAU DAYA KAWAI ====
+    services = [
+        ("📱 Airtime", "Cajin Waya"),
+        ("🧾 Print Recharge", "Print Recharge"),
+        ("🎓 WAEC ePIN", "WAEC ePIN"),
+        ("🌐 Data", "Sayar da Data"),
+        ("🎲 Fund Betting", "Fund Betting"),
+        ("📝 JAMB ePIN", "JAMB ePIN"),
+        ("📺 Cable TV", "Biyan TV"),
+        ("💸 Transfer Money", "Transfer Money"),
+        ("📶 Smile Internet", "Smile Internet"),
+        ("💡 Electricity", "Biyan NEPA"),
+        ("💰 Withdraw Commission", "Withdraw Commission"),
+    ]
+
+    for i in range(0, len(services), 2):
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button(services[i][0], key=f"btn_{i}", use_container_width=True):
+                st.session_state.menu = services[i][1]
+                st.rerun()
+        if i+1 < len(services):
+            with col2:
+                if st.button(services[i+1][0], key=f"btn_{i+1}", use_container_width=True):
+                    st.session_state.menu = services[i+1][1]
+                    st.rerun()       
         
         
         
@@ -111,84 +150,10 @@ menu = st.session_state.menu
        
     
 
-if menu == "Dashboard":
-    st.markdown('<div class="wallet-card">', unsafe_allow_html=True)
-    st.markdown("### Wallet Balance")
-    st.markdown("## ₦5,000")
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.write("")
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("📱\n\nAirtime", use_container_width=True, key="airtime"):
-            st.session_state.menu = "Cajin Waya"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+            
         
-        st.write("")
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("📄\n\nPrint\nRecharge", use_container_width=True, key="print"):
-            st.info("Zai bude soon")
-        st.markdown('</div>', unsafe_allow_html=True)
         
-        st.write("")
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("📝\n\nWAEC\nePIN", use_container_width=True, key="waec"):
-            st.info("Zai bude soon")
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("🌐\n\nData", use_container_width=True, key="data"):
-            st.session_state.menu = "Sayar da Data"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.write("")
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("💰\n\nFund\nBetting", use_container_width=True, key="betting"):
-            st.info("Zai bude soon")
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.write("")
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("📝\n\nJAMB\nePIN", use_container_width=True, key="jamb"):
-            st.info("Zai bude soon")
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("📺\n\nCable\nTV", use_container_width=True, key="cable"):
-            st.session_state.menu = "Biyan TV"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.write("")
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("🔄\n\nTransfer\nMoney", use_container_width=True, key="transfer"):
-            st.info("Zai bude soon")
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.write("")
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("📶\n\nSmile\nInternet", use_container_width=True, key="smile"):
-            st.info("Zai bude soon")
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    with col4:
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("💡\n\nElectricity", use_container_width=True, key="nepa"):
-            st.session_state.menu = "Biyan NEPA"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.write("")
-        st.markdown('<div class="service-btn">', unsafe_allow_html=True)
-        if st.button("💵\n\nWithdraw\nCommission", use_container_width=True, key="withdraw"):
-            st.info("Zai bude soon")
-        st.markdown('</div>', unsafe_allow_html=True)
+      
     
     
     
