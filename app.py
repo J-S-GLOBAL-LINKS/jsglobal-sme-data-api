@@ -120,13 +120,7 @@ st.title(f"🌐 JS Global - {st.session_state.page}")
 
 if st.session_state.page == "Dashboard":
     st.write("Welcome to JS Global Dashboard")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Wallet Balance", "₦25,000")
-    with col2:
-        st.metric("Today Sales", "₦8,500")
-    with col3:
-        st.metric("Commission", "₦1,200")
+    st.info("Barka da zuwa JS Global. Zaɓi service daga Menu na hagu don fara transaction.")
 
 elif st.session_state.page == "Data":
     st.write("Data Subscription Page")
