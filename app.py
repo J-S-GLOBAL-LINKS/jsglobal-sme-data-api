@@ -4,9 +4,45 @@ from datetime import datetime
 import random
 import string
 
+# SMEPLUG API CONFIG
+SMEPLUG_BASE_URL = "https://smeplug.ng/api/v1"
+API_KEY = st.secrets["SMEPLUG_API_KEY"]
+
+def buy_data(network, phone, plan_id):  # <--- Ba space a gaba
+url = f"{SMEPLUG_BASE_URL}/data"
+headers = {
+       "Authorization": f"Bearer {API_KEY}",
+       "Content-Type": "application/json"
+    }
+    data = {
+       "network": network,
+       "phone": phone,
+       "plan": plan_id
+    }
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()      
+      
+   
+   
+      
+      
+      
+     
+  
+
+def get_data_plans(network):
+   url = f"{SMEPLUG_BASE_URL}/data/plans"
+   headers = {"Authorization": f"Bearer {API_KEY}"}
+   params = {"network": network}
+   response = requests.get(url, headers=headers, params=params)
+   return response.json()
+
 # ==== SESSION STATE - KADA KA TABA WANNAN ====
 if 'wallet_balance' not in st.session_state:
-    st.session_state.wallet_balance = 0
+st.session_state.wallet_balance = 0
+
+
+
 
 if 'commission' not in st.session_state:
     st.session_state.commission = 150.00
