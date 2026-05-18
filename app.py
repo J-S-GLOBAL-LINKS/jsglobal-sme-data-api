@@ -1,5 +1,9 @@
 import streamlit as st
+import requests
+from datetime import datetime
+from supabase import create_client, Client
 
+# ===== CONFIG =====
 st.set_page_config(
     page_title="J.S.GLOBAL",
     page_icon="💳",
@@ -7,345 +11,511 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# SESSION STATE
+# ===== SECRETS =====
+SMPLUG_API_KEY = st.secrets["SMPLUG_API_KEY"]
+PAYSTACK_SECRET_KEY = st.secrets["PAYSTACK_SECRET_KEY"]
+PAYSTACK_PUBLIC_KEY = st.secrets["PAYSTACK_PUBLIC_KEY"]
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+ADMIN_PASSWORD = st.secrets["ADMIN_PASSWORD"]
+
+# ===== SUPABASE INIT =====
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# ===== SESSION STATE =====
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+if 'current_user' not in st.session_state:
+    st.session_state.current_user = None
+if 'user_id' not in st.session_state:
+    st.session_state.user_id = None
 if 'page' not in st.session_state:
     st.session_state.page = "Dashboard"
 if 'wallet_balance' not in st.session_state:
     st.session_state.wallet_balance = 0.00
 if 'show_balance' not in st.session_state:
     st.session_state.show_balance = False
+if 'kyc_status' not in st.session_state:
+    st.session_state.kyc_status = "Not Submitted"
+if 'account_type' not in st.session_state:
+    st.session_state.account_type = "user"
+if 'admin_logged_in' not in st.session_state:
+    st.session_state.admin_logged_in = False
 
-# CUSTOM CSS
+# ===== CSS =====
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-   .block-container {padding: 0rem 1rem 1rem 1rem;}
-    
-   .top-bar {
-        background: #1976D2;
-        padding: 12px 15px;
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: -1rem -1rem 0rem -1rem;
-        position: sticky;
-        top: 0;
-        z-index: 999;
-    }
-    
-   .wallet-section {
-        background: white;
-        padding: 15px 20px 5px 20px;
-        margin: 0 -1rem 10px -1rem;
-    }
-    
-   .wallet-label {
-        color: #666;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.5px;
-    }
-    
-   .wallet-amount {
-        font-size: 28px;
-        font-weight: 700;
-        color: #000;
-        margin: 5px 0;
-    }
-    
-   .upgrade-card {
-        background: #E3F2FD;
-        padding: 12px 15px;
-        border-radius: 10px;
-        margin: 15px 0;
-        border: 1px solid #BBDEFB;
-    }
-    
-   .help-float {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #1976D2;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 25px;
-        font-weight: 600;
-        font-size: 13px;
-        box-shadow: 0 4px 12px rgba(25,118,210,0.4);
-        z-index: 1000;
-        border: none;
-    }
+.block-container {padding: 0rem 1rem 1rem 1rem;}
+.top-bar {background: #1976D2; padding: 12px 15px; color: white; display: flex; justify-content: space-between; align-items: center; margin: -1rem -1rem 0rem -1rem; position: sticky; top: 0; z-index: 999;}
+.wallet-section {background: white; padding: 15px 20px 5px 20px; margin: 0 -1rem 10px -1rem;}
+.wallet-label {color: #666; font-size: 11px; font-weight: 500; letter-spacing: 0.5px;}
+.wallet-amount {font-size: 28px; font-weight: 700; color: #000; margin: 5px 0;}
+.kyc-badge {background: #FF9800; color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600;}
+.upgrade-card {background: #E3F2FD; padding: 12px 15px; border-radius: 10px; margin: 15px 0; border: 1px solid #BBDEFB;}
 </style>
 """, unsafe_allow_html=True)
 
-# TOP BAR
-st.markdown("""
-<div class='top-bar'>
-    <div>☰</div>
-    <div style='font-weight: 600; font-size: 16px;'>Dashboard</div>
-    <div>🔔</div>
-""", unsafe_allow_html=True)
+# ===== DATABASE FUNCTIONS =====
+def get_user_data(email):
+    try:
+        response = supabase.table('users').select("*").eq('email', email).execute()
+        return response.data[0] if response.data else None
+    except:
+        return None
 
-# SIDEBAR
-with st.sidebar:
-    st.markdown("### JAMILU")
-    st.caption("Free Member")
-    st.caption("CK101278749 Upgrade >")
-    
-    st.markdown("---")
-    
-    menu_items = [
-        ("🏠", "Dashboard"),
-        ("📱", "Buy Airtime"),
-        ("📶", "Buy Data"),
-        ("📺", "Cable TV"),
-        ("⚡", "Electricity"),
-        ("🖨️", "Print Recharge"),
-        ("🎰", "Fund Betting"),
-        ("💸", "Transfer Money"),
-        ("💰", "Withdraw Commission"),
-        ("🎓", "WAEC ePIN"),
-        ("📝", "JAMB ePIN"),
-        ("🌐", "Smile Internet"),
-    ]
-    
-    for icon, page in menu_items:
-        if st.button(f"{icon} {page}", key=f"menu_{page}", use_container_width=True):
-            st.session_state.page = page
-            st.rerun()
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Sign Out →", key="signout", use_container_width=True):
-        st.session_state.clear()
-        st.rerun()
+def update_wallet(user_id, amount):
+    try:
+        supabase.table('users').update({'wallet_balance': amount}).eq('id', user_id).execute()
+    except:
+        pass
 
-# MAIN DASHBOARD
-if st.session_state.page == "Dashboard":
-    
-    # WALLET BALANCE
-    st.markdown("<div class='wallet-section'>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([6, 1, 1])
-    with col1:
-        st.markdown("<div class='wallet-label'>WALLET BALANCE</div>", unsafe_allow_html=True)
-        if st.session_state.show_balance:
-            st.markdown(f"<div class='wallet-amount'>₦{st.session_state.wallet_balance:,.2f}</div>", unsafe_allow_html=True)
-        else:
-            st.markdown("<div class='wallet-amount'>******</div>", unsafe_allow_html=True)
-    with col2:
-        if st.button("👁️", key="toggle_eye"):
-            st.session_state.show_balance = not st.session_state.show_balance
-            st.rerun()
-    with col3:
-        st.markdown("<div style='font-size: 12px; color: #666; text-align: right;'>1 of 2 ></div>", unsafe_allow_html=True)
-    
-    # FUND WALLET
-    col1, col2 = st.columns([5, 1])
-    with col1:
-        if st.button("+ Fund Wallet", type="primary", use_container_width=True):
-            st.session_state.wallet_balance += 1000
-            st.rerun()
-    with col2:
-        if st.button("🔄", key="refresh"):
-            st.rerun()
-    
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # UPGRADE MEMBERSHIP
-    st.markdown("""
-    <div class='upgrade-card'>
-        <div style='display: flex; justify-content: space-between; align-items: center;'>
-            <div>
-                <div style='font-weight: 700; font-size: 14px; color: #000;'>Upgrade Membership</div>
-                <div style='font-size: 12px; color: #666; margin-top: 2px;'>Unlock more discounts and other benefits</div>
-            </div>
-            <div style='color: #1976D2; font-size: 20px;'>›</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # WHAT WOULD YOU LIKE TO DO
-    col1, col2 = st.columns([4, 1])
-    with col1:
-        st.markdown("<div style='font-weight: 600; font-size: 15px; margin: 15px 0 10px 0;'>What would you like to do?</div>", unsafe_allow_html=True)
-    with col2:
-        if st.button("See all >", key="see_all"):
-            st.info("All Services")
-    
-    # SERVICES GRID
-    services = [
-        ("📱", "Airtime", "Buy Airtime"),
-        ("📶", "Data", "Buy Data"),
-        ("📺", "Cable\nTV", "Cable TV"),
-        ("⚡", "Electricity", "Electricity"),
-        ("🖨️", "Print\nRecharge", "Print Recharge"),
-        ("🎰", "Fund\nBetting", "Fund Betting"),
-        ("💸", "Transfer\nMoney", "Transfer Money"),
-        ("💰", "Withdraw\nCommission", "Withdraw Commission"),
-        ("🎓", "WAEC\nePIN", "WAEC ePIN"),
-        ("📝", "JAMB\nePIN", "JAMB ePIN"),
-        ("🌐", "Smile\nInternet", "Smile Internet"),
-    ]
-    
-    # Display 4 columns
-    for i in range(0, len(services), 4):
-        cols = st.columns(4)
-        for j in range(4):
-            if i + j < len(services):
-                icon, name, page = services[i + j]
-                with cols[j]:
-                    if st.button(f"{icon}\n{name}", key=f"service_{i+j}", use_container_width=True):
-                        st.session_state.page = page
-                        st.rerun()
-    
-    # NEED HELP
-    st.markdown("""
-    <div style='background: white; padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px solid #E0E0E0;'>
-        <div style='display: flex; align-items: center; gap: 10px;'>
-            <div style='font-size: 24px;'>❓</div>
-            <div>
-                <div style='font-weight: 700; font-size: 14px;'>Need Help?</div>
-                <div style='font-size: 12px; color: #666;'>Try our self service or open a ticket</div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+def save_transaction(user_id, service, amount, status, ref, phone=""):
+    try:
+        supabase.table('transactions').insert({
+            'user_id': user_id,
+            'service': service,
+            'amount': amount,
+            'status': status,
+            'reference': ref,
+            'phone': phone,
+            'date': datetime.now().isoformat()
+        }).execute()
+    except:
+        pass
 
-# SERVICE PAGES
-elif st.session_state.page == "Buy Airtime":
-    st.title("📱 Buy Airtime")
-    network = st.selectbox("Select Network", ["MTN", "Airtel", "Glo", "9mobile"])
-    phone = st.text_input("Phone Number", placeholder="08012345678")
-    amount = st.number_input("Amount", min_value=50, step=50, value=100)
-    if st.button("Buy Airtime", type="primary", use_container_width=True):
-        if phone and len(phone) == 11:
-            st.success(f"✅ Airtime ₦{amount:,} sent to {phone}")
-            st.session_state.wallet_balance -= amount
-            st.balloons()
-        else:
-            st.error("Enter valid phone number")
+def add_commission(reseller_id, sub_user_id, service, amount):
+    try:
+        commission = amount * 0.02
+        supabase.table('commissions').insert({
+            'reseller_id': reseller_id,
+            'sub_user_id': sub_user_id,
+            'service': service,
+            'amount': amount,
+            'commission': commission,
+            'date': datetime.now().isoformat()
+        }).execute()
 
-elif st.session_state.page == "Buy Data":
-    st.title("📶 Buy Data")
-    network = st.selectbox("Select Network", ["MTN", "Airtel", "Glo", "9mobile"])
-    
-    plans = {
-        "MTN": ["1GB - 30 Days - ₦290", "2GB - 30 Days - ₦580", "5GB - 30 Days - ₦1,450"],
-        "Airtel": ["1GB - 30 Days - ₦290", "2GB - 30 Days - ₦580", "5GB - 30 Days - ₦1,450"],
-        "Glo": ["1GB - 30 Days - ₦270", "2GB - 30 Days - ₦540", "5GB - 30 Days - ₦1,350"],
-        "9mobile": ["1GB - 30 Days - ₦280", "2GB - 30 Days - ₦560", "5GB - 30 Days - ₦1,400"]
-    }
-    provider = st.selectbox("Network", ["MTN", "Airtel", "Glo", "9mobile"])
-    phone = st.text_input("Phone Number", placeholder="08012345678")
-    
-    plans = {
-        "MTN": ["500MB - ₦200", "1GB - ₦350", "2GB - ₦700", "5GB - ₦1,500"],
-        "Airtel": ["500MB - ₦200", "1.5GB - ₦500", "3GB - ₦1,000", "6GB - ₦1,500"],
-        "Glo": ["1GB - ₦300", "2GB - ₦600", "4.5GB - ₦1,000", "10GB - ₦2,500"],
-        "9mobile": ["500MB - ₦250", "1GB - ₦500", "2GB - ₦1,000", "7GB - ₦1,500"]
-    }
-    
-    plan = st.selectbox("Select Data Plan", plans[provider])
-    if st.button("Buy Data", type="primary", use_container_width=True):
-        if phone and len(phone) == 11:
-            st.success(f"✅ Data {plan} sent to {phone}")
-            st.balloons()
-        else:
-            st.error("Enter valid phone number")
+        # Update reseller earnings
+        reseller = supabase.table('users').select("total_earnings,wallet_balance").eq('id', reseller_id).execute()
+        if reseller.data:
+            new_earn = reseller.data[0]['total_earnings'] + commission
+            new_wallet = reseller.data[0]['wallet_balance'] + commission
+            supabase.table('users').update({'total_earnings': new_earn, 'wallet_balance': new_wallet}).eq('id', reseller_id).execute()
+    except:
+        pass
 
-elif st.session_state.page == "Cable TV":
-    st.title("📺 Cable TV Subscription")
-    provider = st.selectbox("Select Provider", ["DSTV", "GOTV", "Startimes"])
-    smartcard = st.text_input("Smart Card Number", placeholder="1234567890")
-    
-    bouquets = {
-        "DSTV": ["DSTV Padi - ₦2,950", "DSTV Yanga - ₦4,200", "DSTV Confam - ₦7,400"],
-        "GOTV": ["GOtv Smallie - ₦1,300", "GOtv Jinja - ₦2,700", "GOtv Jolli - ₦3,950"],
-        "Startimes": ["Nova - ₦1,500", "Basic - ₦2,600", "Smart - ₦3,500"]
-    }
-    
-    bouquet = st.selectbox("Select Bouquet", bouquets[provider])
-    if st.button("Subscribe Now", type="primary", use_container_width=True):
-        if smartcard:
-            st.success(f"✅ {bouquet} activated for {smartcard}")
-            st.balloons()
-        else:
-            st.error("Enter Smart Card Number")
+# ===== LOGIN / SIGNUP =====
+if not st.session_state.logged_in:
+    st.markdown("<h1 style='text-align: center; color: #1a237e;'>JS GLOBAL SME DATA</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #666;'>Welcome to your VTU Platform</p>", unsafe_allow_html=True)
 
-elif st.session_state.page == "Electricity":
-    st.title("⚡ Electricity Payment")
-    disco = st.selectbox("Select DisCo", ["KEDCO - Kano", "AEDC - Abuja", "EKEDC - Lagos"])
-    meter_type = st.radio("Meter Type", ["Prepaid", "Postpaid"])
-    meter_no = st.text_input("Meter Number", placeholder="12345678901")
-    amount = st.number_input("Amount", min_value=1000, step=500, value=5000)
-    if st.button("Pay Bill", type="primary", use_container_width=True):
-        if meter_no:
-            st.success(f"✅ ₦{amount:,} paid to Meter {meter_no}")
-            st.session_state.wallet_balance -= amount
-        else:
-            st.error("Enter Meter Number")
+    tab1, tab2 = st.tabs(["🔐 Sign In", "📝 Sign Up"])
 
-elif st.session_state.page == "WAEC ePIN":
-    st.title("🎓 WAEC ePIN Purchase")
-    quantity = st.number_input("Quantity", min_value=1, max_value=10, value=1)
-    price = 3500 * quantity
-    st.info(f"Total: ₦{price:,}")
-    if st.button("Buy WAEC ePIN", type="primary", use_container_width=True):
-        st.success(f"✅ {quantity} WAEC ePIN generated")
-        st.code("PIN: WAEC-1234-5678-9012")
+    with tab1:
+        login_email = st.text_input("Email", key="login_email")
+        login_pass = st.text_input("Password", type="password", key="login_pass")
 
-elif st.session_state.page == "JAMB ePIN":
-    st.title("📝 JAMB ePIN Purchase")
-    quantity = st.number_input("Quantity", min_value=1, max_value=10, value=1)
-    price = 4700 * quantity
-    st.info(f"Total: ₦{price:,}")
-    if st.button("Buy JAMB ePIN", type="primary", use_container_width=True):
-        st.success(f"✅ {quantity} JAMB ePIN generated")
-        st.code("PIN: JAMB-9876-5432-1098")
+        if st.button("Sign In", type="primary", use_container_width=True):
+            user = get_user_data(login_email)
+            if user and user['password'] == login_pass:
+                st.session_state.logged_in = True
+                st.session_state.current_user = login_email
+                st.session_state.user_id = user['id']
+                st.session_state.wallet_balance = user['wallet_balance']
+                st.session_state.kyc_status = user['kyc_status']
+                st.session_state.account_type = user['account_type']
+                st.rerun()
+            else:
+                st.error("Invalid email or password")
 
-elif st.session_state.page == "Transfer Money":
-    st.title("💸 Transfer Money")
-    bank = st.selectbox("Select Bank", ["Access Bank", "GTBank", "UBA", "First Bank", "Zenith Bank"])
-    account_no = st.text_input("Account Number", placeholder="1234567890")
-    amount = st.number_input("Amount", min_value=100, step=100)
-    if st.button("Transfer", type="primary", use_container_width=True):
-        if account_no and len(account_no) == 10:
-            st.success(f"✅ ₦{amount:,} sent to {account_no}")
-            st.session_state.wallet_balance -= amount
-        else:
-            st.error("Enter valid 10-digit account number")
+    with tab2:
+        name = st.text_input("Full Name")
+        signup_email = st.text_input("Email", key="signup_email")
+        signup_pass = st.text_input("Password", type="password", key="signup_pass")
+        signup_phone = st.text_input("Phone Number")
 
-elif st.session_state.page == "Withdraw Commission":
-    st.title("💰 Withdraw Commission")
-    st.metric("Available Commission", "₦5,450.00")
-    amount = st.number_input("Withdrawal Amount", min_value=100, max_value=5450, step=100)
-    bank = st.selectbox("Bank", ["Access Bank", "GTBank", "UBA", "First Bank"])
-    account_no = st.text_input("Account Number")
-    if st.button("Withdraw", type="primary", use_container_width=True):
-        st.success(f"✅ ₦{amount:,} withdrawal request submitted")
+        if st.button("Sign Up", type="primary", use_container_width=True):
+            try:
+                supabase.table('users').insert({
+                    'full_name': name,
+                    'email': signup_email,
+                    'password': signup_pass,
+                    'phone': signup_phone,
+                    'wallet_balance': 0,
+                    'kyc_status': 'Not Submitted',
+                    'account_type': 'user',
+                    'commission_rate': 0,
+                    'total_earnings': 0
+                }).execute()
+                st.success("Account created! Please Sign In")
+                st.balloons()
+            except:
+                st.error("Email already exists")
 
-elif st.session_state.page == "Print Recharge":
-    st.title("🖨️ Print Recharge Card")
-    st.info("Print Recharge Card feature coming soon...")
-
-elif st.session_state.page == "Fund Betting":
-    st.title("🎰 Fund Betting Wallet")
-    st.info("Fund Betting Wallet feature coming soon...")
-
-elif st.session_state.page == "Smile Internet":
-    st.title("🌐 Smile Internet")
-    st.info("Smile Internet feature coming soon...")
-
+# ===== MAIN APP =====
 else:
-    st.title(st.session_state.page)
-    st.info(f"{st.session_state.page} feature coming soon...")
-    if st.button("← Back to Dashboard"):
-        st.session_state.page = "Dashboard"
-        st.rerun()
+    # TOP BAR
+    st.markdown("""<div class='top-bar'><div>☰</div><div style='font-weight: 600; font-size: 16px;'>Dashboard</div><div>🔔</div></div>""", unsafe_allow_html=True)
 
-# FLOATING HELP BUTTON - SAU DAYA KAWAI
-st.markdown("""
-<button class='help-float'>Need Help?</button>
-""", unsafe_allow_html=True)
+    # SIDEBAR
+    with st.sidebar:
+        user_data = get_user_data(st.session_state.current_user)
+        st.markdown(f"### {user_data['full_name'].upper()}")
+
+        if st.session_state.kyc_status == "Approved":
+            st.markdown("✅ <span class='kyc-badge'>TIER 3 VERIFIED</span>", unsafe_allow_html=True)
+        elif st.session_state.account_type == "reseller":
+            st.markdown("👑 <span class='kyc-badge'>RESELLER</span>", unsafe_allow_html=True)
+        else:
+            st.markdown("⚠️ <span class='kyc-badge'>TIER 1</span>", unsafe_allow_html=True)
+
+        st.caption("CK101278749 Upgrade >")
+        st.markdown("---")
+
+        menu_items = [
+            ("🏠", "Dashboard"),
+            ("👤", "KYC Verification"),
+            ("👥", "My Resellers"),
+            ("💰", "Fund Wallet"),
+            ("📱", "Buy Airtime"),
+            ("📶", "Buy Data"),
+            ("📺", "Cable TV"),
+            ("⚡", "Electricity"),
+            ("💸", "Transactions"),
+            ("👑", "Admin Panel")
+        ]
+
+        for icon, page in menu_items:
+            if st.button(f"{icon} {page}", use_container_width=True):
+                st.session_state.page = page
+                st.rerun()
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("🚪 Sign Out", use_container_width=True):
+            st.session_state.logged_in = False
+            st.rerun()
+
+    # ===== DASHBOARD =====
+    if st.session_state.page == "Dashboard":
+        st.markdown("<div class='wallet-section'>", unsafe_allow_html=True)
+        col1, col2 = st.columns([6, 1])
+        with col1:
+            st.markdown("<div class='wallet-label'>WALLET BALANCE</div>", unsafe_allow_html=True)
+            if st.session_state.show_balance:
+                st.markdown(f"<div class='wallet-amount'>₦{st.session_state.wallet_balance:,.2f}</div>", unsafe_allow_html=True)
+            else:
+                st.markdown("<div class='wallet-amount'>******</div>", unsafe_allow_html=True)
+        with col2:
+            if st.button("👁️"):
+                st.session_state.show_balance = not st.session_state.show_balance
+                st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        if st.session_state.kyc_status!= "Approved":
+            st.warning("⚠️ Complete KYC to unlock ₦5,000,000 daily limit")
+
+        if st.session_state.account_type == "reseller":
+            user_data = get_user_data(st.session_state.current_user)
+            st.markdown(f"""
+            <div class='upgrade-card'>
+                <div style='display: flex; justify-content: space-between; align-items: center;'>
+                    <div>
+                        <div style='font-weight: 700; font-size: 14px; color: #000;'>Reseller Account</div>
+                        <div style='font-size: 12px; color: #666; margin-top: 2px;'>Total Earnings: ₦{user_data['total_earnings']:,.2f}</div>
+                    </div>
+                    <div style='color: #1976D2; font-size: 20px;'>›</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("<div style='font-weight: 600; font-size: 15px; margin: 15px 0 10px 0;'>What would you like to do?</div>", unsafe_allow_html=True)
+
+        services = [("📱", "Airtime", "Buy Airtime"), ("📶", "Data", "Buy Data"), ("📺", "Cable\nTV", "Cable TV"), ("⚡", "Electricity", "Electricity")]
+        cols = st.columns(4)
+        for i, (icon, name, page) in enumerate(services):
+            with cols[i]:
+                if st.button(f"{icon}\n{name}", key=f"srv_{i}", use_container_width=True):
+                    st.session_state.page = page
+                    st.rerun()
+
+    # ===== KYC PAGE =====
+    elif st.session_state.page == "KYC Verification":
+        st.title("👤 KYC Verification")
+
+        if st.session_state.kyc_status == "Approved":
+            st.success("✅ KYC Approved - Tier 3 Limit: ₦5,000,000/day")
+        elif st.session_state.kyc_status == "Pending":
+            st.info("⏳ KYC Under Review - Please wait 24 hours")
+        else:
+            kyc_type = st.radio("Verification Type", ["Individual", "Business/CAC"], horizontal=True)
+
+            with st.form("kyc_form"):
+                if kyc_type == "Individual":
+                    st.subheader("Personal Information")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        first_name = st.text_input("First Name *")
+                        last_name = st.text_input("Last Name *")
+                        dob = st.date_input("Date of Birth *")
+                    with col2:
+                        phone = st.text_input("Phone Number *")
+                        address = st.text_area("Home Address *")
+                        state = st.selectbox("State *", ["Kano", "Lagos", "Abuja", "Kaduna"])
+
+                    id_type = st.selectbox("ID Type *", ["NIN", "BVN", "Driver's License"])
+                    id_number = st.text_input(f"{id_type} Number *")
+                    id_front = st.file_uploader("Upload ID Front *", type=["jpg", "png", "pdf"])
+                else:
+                    st.subheader("Business Information")
+                    business_name = st.text_input("Business Name *")
+                    rc_number = st.text_input("RC Number *")
+                    business_type = st.selectbox("Business Type *", ["Sole Proprietorship", "LLC", "Limited"])
+                    cac_cert = st.file_uploader("CAC Certificate *", type=["jpg", "png", "pdf"])
+                    director_name = st.text_input("Director Full Name *")
+                    director_bvn = st.text_input("Director BVN *")
+
+                if st.form_submit_button("Submit KYC", type="primary"):
+                    supabase.table('users').update({'kyc_status': 'Pending'}).eq('id', st.session_state.user_id).execute()
+                    st.session_state.kyc_status = "Pending"
+                    st.success("KYC Submitted Successfully!")
+                    st.balloons()
+                    st.rerun()
+
+    # ===== RESELLER PAGE =====
+    elif st.session_state.page == "My Resellers":
+        st.title("👥 My Resellers & Commission")
+        user_data = get_user_data(st.session_state.current_user)
+
+        if user_data['account_type'] == 'reseller':
+            tab1, tab2, tab3 = st.tabs(["📊 Overview", "➕ Add Sub-User", "💸 Earnings"])
+
+            with tab1:
+                sub_users = supabase.table('users').select("*").eq('parent_id', st.session_state.user_id).execute()
+                comm = supabase.table('commissions').select("commission").eq('reseller_id', st.session_state.user_id).execute()
+                total_earn = sum([c['commission'] for c in comm.data])
+
+                col1, col2, col3 = st.columns(3)
+                col1.metric("Total Sub-Users", len(sub_users.data))
+                col2.metric("Total Earnings", f"₦{total_earn:,.2f}")
+                col3.metric("Commission Rate", "2%")
+
+                st.subheader("Your Sub-Users")
+                if sub_users.data:
+                    st.dataframe(sub_users.data, use_container_width=True)
+                else:
+                    st.info("No sub-users yet")
+
+            with tab2:
+                with st.form("sub_user_form"):
+                    sub_name = st.text_input("Full Name *")
+                    sub_email = st.text_input("Email *")
+                    sub_pass = st.text_input("Password *", type="password")
+                    sub_phone = st.text_input("Phone Number *")
+
+                    if st.form_submit_button("Create Sub-User", type="primary"):
+                        try:
+                            supabase.table('users').insert({
+                                'full_name': sub_name,
+                                'email': sub_email,
+                                'password': sub_pass,
+                                'phone': sub_phone,
+                                'account_type': 'sub_user',
+                                'parent_id': st.session_state.user_id,
+                                'wallet_balance': 0,
+                                'kyc_status': 'Not Submitted',
+                                'commission_rate': 0,
+                                'total_earnings': 0
+                            }).execute()
+                            st.success(f"Sub-User {sub_name} created!")
+                            st.rerun()
+                        except:
+                            st.error("Email already exists")
+
+            with tab3:
+                comm_history = supabase.table('commissions').select("*").eq('reseller_id', st.session_state.user_id).execute()
+                if comm_history.data:
+                    st.dataframe(comm_history.data, use_container_width=True)
+                else:
+                    st.info("No commissions yet")
+        else:
+            st.info("🚀 Upgrade to Reseller Account to earn 2% commission")
+            if st.button("Upgrade to Reseller - ₦10,000", type="primary"):
+                if st.session_state.wallet_balance >= 10000:
+                    new_bal = st.session_state.wallet_balance - 10000
+                    supabase.table('users').update({
+                        'account_type': 'reseller',
+                        'commission_rate': 2.0,
+                        'wallet_balance': new_bal
+                    }).eq('id', st.session_state.user_id).execute()
+                    st.session_state.wallet_balance = new_bal
+                    st.session_state.account_type = 'reseller'
+                    st.success("Upgraded to Reseller!")
+                    st.balloons()
+                    st.rerun()
+                else:
+                    st.error("Insufficient balance")
+
+    # ===== FUND WALLET - PAYSTACK =====
+    elif st.session_state.page == "Fund Wallet":
+        st.title("💰 Fund Wallet")
+        amount = st.number_input("Amount (₦)", min_value=100, value=1000, step=100)
+
+        if st.button("Pay with Paystack", type="primary", use_container_width=True):
+            headers = {"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"}
+            data = {
+                "email": st.session_state.current_user,
+                "amount": int(amount * 100),
+                "callback_url": "https://yourapp.com/verify"
+            }
+            res = requests.post("https://api.paystack.co/transaction/initialize", headers=headers, json=data)
+
+            if res.status_code == 200:
+                url = res.json()['data']['authorization_url']
+                st.success("Click below to pay")
+                st.link_button("Pay Now", url)
+                st.info("After payment, your wallet will update automatically")
+            else:
+                st.error("Payment initialization failed")
+
+    # ===== BUY AIRTIME - SMEPLUG =====
+    elif st.session_state.page == "Buy Airtime":
+        st.title("📱 Buy Airtime")
+        network = st.selectbox("Network", ["MTN", "AIRTEL", "GLO", "9MOBILE"])
+        phone = st.text_input("Phone Number", placeholder="08012345678")
+        amount = st.number_input("Amount", min_value=50, step=50, value=100)
+
+        if st.button("Buy Airtime", type="primary", use_container_width=True):
+            if phone and len(phone) == 11:
+                if st.session_state.wallet_balance >= amount:
+                    headers = {"Authorization": f"Token {SMPLUG_API_KEY}", "Content-Type": "application/json"}
+                    payload = {"network": network, "mobile_number": phone, "amount": amount, "Ported_number": True}
+
+                    with st.spinner("Processing..."):
+                        res = requests.post(f"{SMPLUG_BASE_URL}/topup/", headers=headers, json=payload)
+
+                        if res.json().get("status") == "success":
+                            # Commission for reseller
+                            user_data = get_user_data(st.session_state.current_user)
+                            if user_data['parent_id']:
+                                add_commission(user_data['parent_id'], st.session_state.user_id, "Airtime", amount)
+
+                            new_bal = st.session_state.wallet_balance - amount
+                            update_wallet(st.session_state.user_id, new_bal)
+                            st.session_state.wallet_balance = new_bal
+                            save_transaction(st.session_state.user_id, "Airtime", amount, "Success", res.json().get('id'), phone)
+                            st.success(f"✅ Airtime ₦{amount:,} sent to {phone}")
+                            st.balloons()
+                        else:
+                            st.error("Failed: " + str(res.json().get('message')))
+                else:
+                    st.error("Insufficient wallet balance")
+            else:
+                st.error("Enter valid 11-digit phone number")
+
+    # ===== BUY DATA - SMEPLUG =====
+    elif st.session_state.page == "Buy Data":
+        st.title("📶 Buy Data")
+        provider = st.selectbox("Network", ["MTN", "AIRTEL", "GLO", "9MOBILE"])
+        phone = st.text_input("Phone Number", placeholder="08012345678")
+
+        plans = {
+            "MTN": {"1GB - ₦350": "2", "2GB - ₦700": "3", "5GB - ₦1,500": "5"},
+            "AIRTEL": {"1.5GB - ₦500": "8", "3GB - ₦1,000": "9", "6GB - ₦1,500": "10"},
+            "GLO": {"1GB - ₦300": "13", "2GB - ₦600": "14", "4.5GB - ₦1,000": "15"},
+            "9MOBILE": {"1GB - ₦500": "20", "2GB - ₦1,000": "21", "7GB - ₦1,500": "22"}
+        }
+
+        plan_name = st.selectbox("Select Plan", list(plans[provider].keys()))
+        plan_id = plans[provider][plan_name]
+        amount = int(plan_name.split("₦")[1].replace(",", ""))
+
+        if st.button("Buy Data", type="primary", use_container_width=True):
+            if phone and len(phone) == 11:
+                if st.session_state.wallet_balance >= amount:
+                    headers = {"Authorization": f"Token {SMPLUG_API_KEY}", "Content-Type": "application/json"}
+                    payload = {"network": provider, "mobile_number": phone, "plan": plan_id, "Ported_number": True}
+
+                    with st.spinner("Processing..."):
+                        res = requests.post(f"{SMPLUG_BASE_URL}/data", headers=headers, json=payload)
+
+                        if res.json().get("status") == "success":
+                            user_data = get_user_data(st.session_state.current_user)
+                            if user_data['parent_id']:
+                                add_commission(user_data['parent_id'], st.session_state.user_id, "Data", amount)
+
+                            new_bal = st.session_state.wallet_balance - amount
+                            update_wallet(st.session_state.user_id, new_bal)
+                            st.session_state.wallet_balance = new_bal
+                            save_transaction(st.session_state.user_id, "Data", amount, "Success", res.json().get('id'), phone)
+                            st.success(f"✅ {plan_name} sent to {phone}")
+                            st.balloons()
+                        else:
+                            st.error("Failed: " + str(res.json().get('message')))
+                else:
+                    st.error("Insufficient wallet balance")
+            else:
+                st.error("Enter valid phone number")
+
+    # ===== TRANSACTIONS =====
+    elif st.session_state.page == "Transactions":
+        st.title("💸 Transaction History")
+        trans = supabase.table('transactions').select("*").eq('user_id', st.session_state.user_id).order('date', desc=True).execute()
+        if trans.data:
+            st.dataframe(trans.data, use_container_width=True)
+        else:
+            st.info("No transactions yet")
+
+    # ===== ADMIN PANEL =====
+    elif st.session_state.page == "Admin Panel":
+        st.title("👑 Admin Panel")
+
+        if not st.session_state.admin_logged_in:
+            admin_pass = st.text_input("Admin Password", type="password")
+            if st.button("Login as Admin"):
+                if admin_pass == ADMIN_PASSWORD:
+                    st.session_state.admin_logged_in = True
+                    st.rerun()
+                else:
+                    st.error("Wrong Password")
+        else:
+            if st.button("🚪 Logout Admin"):
+                st.session_state.admin_logged_in = False
+                st.rerun()
+
+            tab1, tab2, tab3 = st.tabs(["📋 KYC Requests", "👥 All Users", "💰 Transactions"])
+
+            with tab1:
+                st.subheader("Pending KYC")
+                users = supabase.table('users').select("*").eq('kyc_status', 'Pending').execute()
+                for user in users.data:
+                    st.write(f"**{user['full_name']}** - {user['email']}")
+                    col1, col2 = st.columns(2)
+                    if col1.button("✅ Approve", key=f"app_{user['id']}"):
+                        supabase.table('users').update({'kyc_status': 'Approved'}).eq('id', user['id']).execute()
+                        st.success("Approved")
+                        st.rerun()
+                    if col2.button("❌ Reject", key=f"rej_{user['id']}"):
+                        supabase.table('users').update({'kyc_status': 'Rejected'}).eq('id', user['id']).execute()
+                        st.error("Rejected")
+                        st.rerun()
+                    st.markdown("---")
+
+            with tab2:
+                users = supabase.table('users').select("*").execute()
+                st.dataframe(users.data, use_container_width=True)
+                col1, col2, col3 = st.columns(3)
+                col1.metric("Total Users", len(users.data))
+                col2.metric("Resellers", len([u for u in users.data if u['account_type'] == 'reseller']))
+                col3.metric("Verified", len([u for u in users.data if u['kyc_status'] == 'Approved']))
+
+            with tab3:
+                trans = supabase.table('transactions').select("*").order('date', desc=True).limit(100).execute()
+                st.dataframe(trans.data, use_container_width=True)
+
+    # ===== SAURAN PAGES =====
+    else:
+        st.title(st.session_state.page)
+        st.info("Coming soon...")
