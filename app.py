@@ -104,7 +104,7 @@ menu = st.sidebar.radio(
         "Tarihin Ciniki",
         "Settings",
         "Fita"
-       ],
+   ],
     label_visibility="collapsed"
 )   
     if menu == "Dashboard":
