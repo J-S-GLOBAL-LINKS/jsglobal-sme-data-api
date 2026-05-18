@@ -106,8 +106,8 @@ menu = st.sidebar.radio(
         "Fita"
    ],
     label_visibility="collapsed"
-) 
-    if menu == "Dashboard":
+)
+if menu == "Dashboard":
     st.markdown('<div class="wallet-card">', unsafe_allow_html=True)
     st.markdown("### Wallet Balance")
     st.markdown("## ₦5,000")
