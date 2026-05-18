@@ -91,22 +91,26 @@ st.markdown("""
 st.sidebar.image("logo.png", width=150)
 st.sidebar.markdown("### J.S.GLOBAL LINKS")
 
-menu = st.sidebar.radio(
-    "Menu", 
-       [
-        "Dashboard",
-        "Sayar da Data", 
-        "Cajin Waya",
-        "Biyan TV",
-        "Biyan NEPA",
-        "Profile Dina",
-        "Wallet Dina",
-        "Tarihin Ciniki",
-        "Settings",
-        "Fita"
-   ],
-    label_visibility="collapsed"
-)
+# ==== SESSION STATE NAVIGATION ====
+if 'menu' not in st.session_state:
+    st.session_state.menu = "Dashboard"
+
+menu = st.session_state.menu
+    
+       
+        
+        
+        
+        
+        
+       
+        
+        
+        
+       
+       
+    
+
 if menu == "Dashboard":
     st.markdown('<div class="wallet-card">', unsafe_allow_html=True)
     st.markdown("### Wallet Balance")
