@@ -1,229 +1,126 @@
-import streamlit as st
-
-# ==== PAGE CONFIG ====
-st.set_page_config(
-    page_title="SMEPlug",
-    page_icon="⚡",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# ==== SESSION STATE ====
-if 'logged_in' not in st.session_state:
-    st.session_state.logged_in = False
-if 'page' not in st.session_state:
-    st.session_state.page = "Dashboard"
-
-# CSS - SMEPlug DESIGN
-st.markdown("""
-<style>
-[data-testid="stAppViewContainer"] {background-color: #f5f7fa;}
-[data-testid="stHeader"] {background-color: #0d47a1;}
-[data-testid="stSidebar"] {background-color: white !important; padding-top: 1rem;}
-
-/* LOGO STYLE */
-.sidebar-logo {
-    text-align: center;
-    padding: 10px 0px 20px 0px;
-    border-bottom: 1px solid #e0e0e0;
-    margin-bottom: 15px;
-}
-.sidebar-logo h1 {
-    color: #0d47a1;
-    font-size: 24px;
-    font-weight: 800;
-    margin: 0px;
-    letter-spacing: -1px;
-}
-.sidebar-logo p {
-    color: #666;
-    font-size: 11px;
-    margin: 0px;
-}
-
-/* SIDEBAR BUTTONS - PERFECT SIZE */
-[data-testid="stSidebar"] .stButton > button {
-    background-color: white !important;
-    color: #333333 !important;
-    font-weight: 500 !important;
-    border: none !important;
-    text-align: left !important;
-    padding: 8px 12px !important;
-    font-size: 14px !important;
-    border-radius: 6px !important;
-    margin: 3px 0px !important;
-    line-height: 1.3 !important;
-    height: 38px !important;
-}
-
-/* ICONS SIZE - ANDROID FIX */
-[data-testid="stSidebar"] .stButton > button * {
-    font-size: 14px !important;
-    transform: scale(1) !important;
-    display: inline-block !important;
-    transform-origin: left center !important;
-}
-
-[data-testid="stSidebar"] .stButton > button:hover {
-    background-color: #0d47a1 !important;
-    color: white !important;
-}
-
-/* DASHBOARD CARDS */
-.dashboard-card {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 15px;
-}
-
-.stButton > button {
-    background-color: #0d47a1;
-    color: white;
-    border-radius: 8px;
-    border: none;
-    padding: 12px;
-    font-weight: 600;
-    width: 100%;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# ==== SIDEBAR MENU ====
-with st.sidebar:
-    # LOGO SMEPlug
+elif st.session_state.page == "Flyer":
+    st.title("📱 J.S.GLOBAL Premium Flyer")
+    
     st.markdown("""
-    <div class="sidebar-logo">
-        <h1>⚡ SMEPlug</h1>
-        <p>Your All-in-One Platform</p>
+    <style>
+    .flyer-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, #0A2463 0%, #1a3a7a 100%);
+        padding: 40px 30px;
+        border-radius: 25px;
+        font-family: 'Poppins', sans-serif;
+        color: white;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    .flyer-container::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: #FFD700;
+        opacity: 0.1;
+        border-radius: 50%;
+    }
+    .badge-new {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        color: #0A2463;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 14px;
+        display: inline-block;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(255,215,0,0.4);
+    }
+    .headline-new {
+        font-size: 42px;
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #FFD700, #FFFFFF);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .subhead-new {
+        font-size: 20px;
+        color: #00A676;
+        font-weight: 700;
+        margin-bottom: 30px;
+    }
+    .feature-box {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 15px;
+        margin: 15px 0;
+        border: 2px solid rgba(255,215,0,0.3);
+    }
+    .feature-title {
+        color: #FFD700;
+        font-size: 18px;
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+    .feature-item {
+        font-size: 15px;
+        margin: 8px 0;
+        font-weight: 600;
+    }
+    .cta-new {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        color: #0A2463;
+        padding: 25px;
+        border-radius: 18px;
+        text-align: center;
+        font-weight: 900;
+        margin-top: 25px;
+        box-shadow: 0 10px 30px rgba(255,215,0,0.5);
+    }
+    </style>
+    
+    <div class="flyer-container">
+        <div style="text-align: center; font-size: 20px; font-weight: 900; color: #FFD700; margin-bottom: 25px; letter-spacing: 1px;">J.S.GLOBAL LINKS AND SERVICES</div>
+        
+        <div style="text-align: center;">
+            <div class="badge-new">🚀 100% FREE APP</div>
+        </div>
+        
+        <div class="headline-new">DATA CHEAP +<br>FREE ANDROID APP</div>
+        <div class="subhead-new">Sayi Data Mai Rahusa, Ka Samu App Kyauta!</div>
+        
+        <div class="feature-box">
+            <div class="feature-title">📊 DATA SELLING</div>
+            <div class="feature-item">✅ MTN, Airtel, Glo, 9mobile</div>
+            <div class="feature-item">✅ Cheap Data & Airtime</div>
+            <div class="feature-item">✅ 24/7 Instant Delivery</div>
+            <div class="feature-item">✅ Reseller Packages Available</div>
+        </div>
+        
+        <div class="feature-box">
+            <div class="feature-title">📱 FINTECH APP FEATURES</div>
+            <div class="feature-item">✅ Fingerprint Login Security</div>
+            <div class="feature-item">✅ Push Notifications</div>
+            <div class="feature-item">✅ FREE CAC Registration</div>
+            <div class="feature-item">✅ Google Playstore Publishing</div>
+        </div>
+        
+        <div class="cta-new">
+            <div style="font-size: 22px; margin-bottom: 8px;">📲 TUNTUBE MU YAU!</div>
+            <div style="font-size: 20px; margin-bottom: 8px;">WhatsApp: +2347062589825</div>
+            <div style="font-size: 16px;">Data + App = Nasar Kasuwancinka</div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
-    
-    if st.button("📊 Dashboard"):
-        st.session_state.page = "Dashboard"
-        st.rerun()
-    
-    if st.button("📱 Data"):
-        st.session_state.page = "Data"
-        st.rerun()
-    
-    if st.button("📞 Airtime"):
-        st.session_state.page = "Airtime"
-        st.rerun()
-    
-    if st.button("💡 Electricity"):
-        st.session_state.page = "Electricity"
-        st.rerun()
-    
-    if st.button("📺 TV"):
-        st.session_state.page = "TV"
-        st.rerun()
-    
-    if st.button("🏦 Pay Bills"):
-        st.session_state.page = "Pay Bills"
-        st.rerun()
-    
-    if st.button("🎓 Education"):
-        st.session_state.page = "Education"
-        st.rerun()
-    
-    if st.button("👛 My Wallet"):
-        st.session_state.page = "My Wallet"
-        st.rerun()
-    
-    if st.button("💰 Commission"):
-        st.session_state.page = "Commission"
-        st.rerun()
-    
-    if st.button("📜 Transactions"):
-        st.session_state.page = "Transactions"
-        st.rerun()
-    
-    if st.button("⚙️ Settings"):
-        st.session_state.page = "Settings"
-        st.rerun()
     
     st.markdown("---")
-    
-    if st.button("🔒 Logout"):
-        st.session_state.logged_in = False
-        st.session_state.page = "Dashboard"
-        st.rerun()
-
-# ==== MAIN PAGE CONTENT ====
-st.title(f"SMEPlug - {st.session_state.page}")
-
-if st.session_state.page == "Dashboard":
-    st.markdown("""
-    <div class="dashboard-card">
-        <h3>🎉 Barka da zuwa SMEPlug</h3>
-        <p>Platform dinka na siyan Data, Airtime, da biyan Bills cikin sauki.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     with col1:
-        st.markdown("""
-        <div class="dashboard-card">
-            <h4>📱 Data</h4>
-            <p>Siyan data MTN, Airtel, Glo, 9mobile</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.link_button("💬 WhatsApp Yanzu", "https://wa.me/2347062589825")
     with col2:
-        st.markdown("""
-        <div class="dashboard-card">
-            <h4>💡 Bills</h4>
-            <p>Biyan wuta, TV, ruwa da sauransu</p>
-        </div>
-        """, unsafe_allow_html=True)
-    with col3:
-        st.markdown("""
-        <div class="dashboard-card">
-            <h4>💰 Wallet</h4>
-            <p>Saka kudi ka yi transaction</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.info("👈 Zaɓi service da kake so daga Menu na hagu don farawa.")
-
-elif st.session_state.page == "Data":
-    st.subheader("📱 Data Subscription")
-    st.write("Zaɓi network da bundle da kake so.")
-    
-elif st.session_state.page == "Airtime":
-    st.subheader("📞 Airtime Recharge")
-    st.write("Saka number da amount.")
-    
-elif st.session_state.page == "Electricity":
-    st.subheader("💡 Electricity Payment")
-    st.write("Biyan NEPA/PHCN cikin sauki.")
-    
-elif st.session_state.page == "TV":
-    st.subheader("📺 TV Subscription")
-    st.write("DSTV, GOTV, Startimes renewal.")
-    
-elif st.session_state.page == "Pay Bills":
-    st.subheader("🏦 Pay Bills")
-    st.write("Biyan kudin ruwa da sauransu.")
-    
-elif st.session_state.page == "Education":
-    st.subheader("🎓 Education Payment")
-    st.write("WAEC, NECO, JAMB e-PIN.")
-    
-elif st.session_state.page == "My Wallet":
-    st.subheader("👛 My Wallet")
-    st.info("Balance: ₦0.00")
-    st.button("Fund Wallet")
-    
-elif st.session_state.page == "Commission":
-    st.subheader("💰 Commission")
-    st.info("Commission: ₦0.00")
-    
-elif st.session_state.page == "Transactions":
-    st.subheader("📜 Transaction History")
-    st.write("Babu transaction tukuna.")
-    
-elif st.session_state.page == "Settings":
-    st.subheader("⚙️ Settings")
-    st.write("Canza password da profile.")
+        st.info("📸 Screenshot ka tura customers")
