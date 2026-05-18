@@ -4,7 +4,7 @@ st.set_page_config(
     page_title="J.S.GLOBAL",
     page_icon="💳",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # SESSION STATE
@@ -14,59 +14,103 @@ if 'wallet_balance' not in st.session_state:
     st.session_state.wallet_balance = 0.00
 if 'show_balance' not in st.session_state:
     st.session_state.show_balance = False
-if 'show_sidebar' not in st.session_state:
-    st.session_state.show_sidebar = False
 
-# CUSTOM CSS - CLUBKONNECT STYLE
+# CUSTOM CSS
 st.markdown("""
 <style>
-    /* Hide Streamlit Default */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+   .block-container {padding: 0rem 1rem 1rem 1rem;}
     
-    /* Top Bar */
-    .top-bar {
+  .top-bar {
         background: #1976D2;
-        padding: 15px 20px;
+        padding: 12px 15px;
         color: white;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin: -1rem -1rem 1rem -1rem;
+        margin: -1rem -1rem 0rem -1rem;
+        position: sticky;
+        top: 0;
+        z-index: 999;
     }
     
-    /* Wallet Card */
-    .wallet-card {
+  .wallet-section {
         background: white;
-        padding: 20px;
-        border-radius: 15px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        margin-bottom: 15px;
+        padding: 15px 20px 5px 20px;
+        margin: 0 -1rem 10px -1rem;
     }
     
-    /* Fund Wallet Button */
-    .fund-wallet-btn {
-        background: #E91E63;
-        color: white;
-        padding: 12px 30px;
-        border-radius: 25px;
-        border: none;
-        font-weight: bold;
-        width: 100%;
-        margin: 10px 0;
+  .wallet-label {
+        color: #666;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
     }
     
-    /* Upgrade Card */
-    .upgrade-card {
-        background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
-        padding: 15px;
-        border-radius: 12px;
+  .wallet-amount {
+        font-size: 28px;
+        font-weight: 700;
+        color: #000;
+        margin: 5px 0;
+    }
+    
+  .upgrade-card {
+        background: #E3F2FD;
+        padding: 12px 15px;
+        border-radius: 10px;
         margin: 15px 0;
-        border: 1px solid #90CAF9;
+        border: 1px solid #BBDEFB;
     }
     
-    /* Service Grid */
-    .service-grid {
-        display: grid;
-        grid-template-columns: repeat(4,
+  .help-float {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #1976D2;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 13px;
+        box-shadow: 0 4px 12px rgba(25,118,210,0.4);
+        z-index: 1000;
+        border: none;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# TOP BAR
+st.markdown("""
+<div class='top-bar'>
+    <div>☰</div>
+    <div style='font-weight: 600; font-size: 16px;'>Dashboard</div>
+    <div>🔔</div>
+</div>
+""", unsafe_allow_html=True)
+
+# SIDEBAR
+with st.sidebar:
+    st.markdown("### JAMILU")
+    st.caption("Free Member")
+    st.caption("CK101278749 Upgrade >")
+    
+    st.markdown("---")
+    
+    menu_items = [
+        ("🏠", "Dashboard"),
+        ("📱", "Buy Airtime"),
+        ("📶", "Buy Data"),
+        ("📺", "Cable TV"),
+        ("⚡", "Electricity"),
+        ("🖨️", "Print Recharge"),
+        ("🎰", "Fund Betting"),
+        ("💸", "Transfer Money"),
+        ("💰", "Withdraw Commission"),
+        ("🎓", "WAEC ePIN"),
+        ("📝", "JAMB ePIN"),
+        ("🌐", "Smile Internet"),
+    ]
+    
+    for
