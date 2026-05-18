@@ -68,6 +68,26 @@ if ('serviceWorker' in navigator) {
 """, unsafe_allow_html=True)
 
 
+
+# CSS - DESIGN
+st.markdown("""
+<style>
+[data-testid="stAppViewContainer"] {background-color: #ffffff;}
+[data-testid="stHeader"] {background-color: #0d47a1;}
+[data-testid="stSidebar"] {background-color: white !important;}
+
+/* SIDEBAR BUTTONS - KANKANAN KAI */
+[data-testid="stSidebar"] .stButton > button {
+    background-color: white !important;
+    color: #333333 !important;
+    font-weight: 500 !important;
+    border: none !important;
+    text-align: left !important;
+    padding: 5px 8px !important;
+    font-size: 12px !important;
+    border-radius: 6px !important;
+    margin: 1px 0px !important;
+    line-height: 1.2 !important;
 }
 
 [data-testid="stSidebar"] .stButton > button:hover {
@@ -75,21 +95,18 @@ if ('serviceWorker' in navigator) {
     color: white !important;
 }
 
+/* SAURAN BUTTONS A CIKIN APP */
 .stButton > button {
     background-color: #0d47a1;
     color: white;
     border-radius: 8px;
     border: none;
-    padding: 12px;
+    padding: 10px;
     font-weight: 600;
     width: 100%;
 }
-
-.stButton > button:hover {
-    background-color: #1565c0;
-    color: white;
-}
-# CSS - DESIGN
+</style>
+""", unsafe_allow_html=True)
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {background-color: #ffffff;}
