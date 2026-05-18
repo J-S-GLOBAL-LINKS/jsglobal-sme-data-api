@@ -21,15 +21,6 @@ def buy_data(network, phone, plan_id):  # <--- Ba space a gaba
     }
     response = requests.post(url, headers=headers, json=data)
     return response.json()      
-      
-   
-   
-      
-      
-      
-     
-  
-
 def get_data_plans(network):
    url = f"{SMEPLUG_BASE_URL}/data/plans"
    headers = {"Authorization": f"Bearer {API_KEY}"}
@@ -64,10 +55,6 @@ st.markdown("""
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
-
-
-
-
 # CSS - DESIGN
 st.markdown("""
 <style>
