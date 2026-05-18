@@ -9,8 +9,8 @@ SMEPLUG_BASE_URL = "https://smeplug.ng/api/v1"
 API_KEY = st.secrets["SMEPLUG_API_KEY"]
 
 def buy_data(network, phone, plan_id):  # <--- Ba space a gaba
-url = f"{SMEPLUG_BASE_URL}/data"
-headers = {
+  url = f"{SMEPLUG_BASE_URL}/data"
+  headers = {
        "Authorization": f"Bearer {API_KEY}",
        "Content-Type": "application/json"
     }
