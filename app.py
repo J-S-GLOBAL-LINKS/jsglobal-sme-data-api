@@ -113,4 +113,61 @@ with st.sidebar:
         ("🌐", "Smile Internet"),
     ]
     
-    for
+    for icon, page in menu_items:
+        if st.button(f"{icon} {page}", key=f"menu_{page}", use_container_width=True):
+            st.session_state.page = page
+            st.rerun()
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("Sign Out →", key="signout", use_container_width=True):
+        st.session_state.clear()
+        st.rerun()
+
+# MAIN DASHBOARD
+if st.session_state.page == "Dashboard":
+    
+    # WALLET BALANCE
+    st.markdown("<div class='wallet-section'>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([6, 1, 1])
+    with col1:
+        st.markdown("<div class='wallet-label'>WALLET BALANCE</div>", unsafe_allow_html=True)
+        if st.session_state.show_balance:
+            st.markdown(f"<div class='wallet-amount'>₦{st.session_state.wallet_balance:,.2f}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("<div class='wallet-amount'>******</div>", unsafe_allow_html=True)
+    with col2:
+        if st.button("👁️", key="toggle_eye"):
+            st.session_state.show_balance = not st.session_state.show_balance
+            st.rerun()
+    with col3:
+        st.markdown("<div style='font-size: 12px; color: #666; text-align: right;'>1 of 2 ></div>", unsafe_allow_html=True)
+    
+    # FUND WALLET
+    col1, col2 = st.columns([5, 1])
+    with col1:
+        if st.button("+ Fund Wallet", type="primary", use_container_width=True):
+            st.session_state.wallet_balance += 1000
+            st.rerun()
+    with col2:
+        if st.button("🔄", key="refresh"):
+            st.rerun()
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # UPGRADE MEMBERSHIP
+    st.markdown("""
+    <div class='upgrade-card'>
+        <div style='display: flex; justify-content: space-between; align-items: center;'>
+            <div>
+                <div style='font-weight: 700; font-size: 14px; color: #000;'>Upgrade Membership</div>
+                <div style='font-size: 12px; color: #666; margin-top: 2px;'>Unlock more discounts and other benefits</div>
+            </div>
+            <div style='color: #1976D2; font-size: 20px;'>›</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # WHAT WOULD YOU LIKE TO DO
+    col1, col2 = st.columns([4, 1])
+    with col1:
+        st.markdown("<div style='font
