@@ -237,15 +237,19 @@ elif st.session_state.page == "Buy Data":
         "Glo": ["1GB - 30 Days - ₦270", "2GB - 30 Days - ₦540", "5GB - 30 Days - ₦1,350"],
         "9mobile": ["1GB - 30 Days - ₦280", "2GB - 30 Days - ₦560", "5GB - 30 Days - ₦1,400"]
     }
-    
-    plan = st.selectbox("Select Data Plan", plans[network])
+    provider = st.selectbox("Network", ["MTN", "Airtel", "Glo", "9mobile"])
     phone = st.text_input("Phone Number", placeholder="08012345678")
     
+    plans = {
+        "MTN": ["500MB - ₦200", "1GB - ₦350", "2GB - ₦700", "5GB - ₦1,500"],
+        "Airtel": ["500MB - ₦200", "1.5GB - ₦500", "3GB - ₦1,000", "6GB - ₦1,500"],
+        "Glo": ["1GB - ₦300", "2GB - ₦600", "4.5GB - ₦1,000", "10GB - ₦2,500"],
+        "9mobile": ["500MB - ₦250", "1GB - ₦500", "2GB - ₦1,000", "7GB - ₦1,500"]
+    }
+    
+    plan = st.selectbox("Select Data Plan", plans[provider])
     if st.button("Buy Data", type="primary", use_container_width=True):
         if phone and len(phone) == 11:
-            st.success(f"✅ Data {plan} sent to {phone}")
-            st.balloons()
-         if phone and len(phone) == 11:
             st.success(f"✅ Data {plan} sent to {phone}")
             st.balloons()
         else:
