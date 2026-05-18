@@ -104,7 +104,9 @@ menu = st.sidebar.radio(
         "Tarihin Ciniki",
         "Settings",
         "Fita"
-       # ==== NUNA KOWANE PAGE BIYA MENU ====
+       ],
+    label_visibility="collapsed"
+)    # ==== NUNA KOWANE PAGE BIYA MENU ====
 if menu == "Dashboard":
     st.title("🏠 Dashboard")
     st.success("Barka da zuwa J.S.GLOBAL LINKS")
@@ -138,17 +140,6 @@ elif menu == "Settings":
 elif menu == "Fita":
     st.session_state.logged_in = False
     st.rerun() 
-       
-        
-       
-        
-        
-        
-        
-        
-    ],
-    label_visibility="collapsed"
-)
 api_key = st.secrets["SMEPLUG_API_KEY"]
 
 # 🔥🔥🔥 CANZA WANNAN ZUWA BANK DINKA 🔥🔥🔥
