@@ -117,31 +117,13 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-[data-testid="stAppViewContainer"] {background-color: #ffffff;}
-[data-testid="stHeader"] {background-color: #0d47a1;}
-[data-testid="stSidebar"] {background-color: white !important;}
-
-/* SIDEBAR BUTTONS - KANKANAN */
-[data-testid="stSidebar"] .stButton > button {
-    background-color: white !important;
-    color: #333333 !important;
-    font-weight: 500 !important;
-    border: none !important;
-    text-align: left !important;
-    padding: 5px 8px !important;   /* Karami sosai */
-    font-size: 12px !important;   /* ICONS KANKANAN KAI */
-    border-radius: 6px !important;
-    margin: 1px 0px !important;
-    line-height: 1.2 !important;
-}
-
+# ==== SIDEBAR MENU ====
+with st.sidebar:
+    st.markdown("### Menu")
 /* HOVER EFFECT */
-[data-testid="stSidebar"] .stButton > button:hover {
+[data-testid="stSidebar"] .stButton er {
     background-color: #0d47a1 !important;
-    color: white !important;
+    color: white !import
 }
 
 /* SAURAN BUTTONS A CIKIN APP */
