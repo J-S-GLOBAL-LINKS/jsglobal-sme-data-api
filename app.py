@@ -1,60 +1,20 @@
 import streamlit as st
 import requests
-from datetime import datetime
-import random
-import string
 
-#SMEPLUG API CONFIG
-SMEPLUG_BASE_URL = "https://smeplug.ng/api/v1"
-API_KEY = st.secrets["SMEPLUG_API_KEY"]
+# ==== PAGE CONFIG ====
+st.set_page_config(
+    page_title="JS Global",
+    page_icon="🌐",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-def buy_data(network, phone, plan_id):  # <--- Ba space a gaba
-    url = f"{SMEPLUG_BASE_URL}/data"
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "network": network,
-        "phone": phone,
-        "plan": plan_id
-    }
-    response = requests.post(url, headers=headers, json=data)
-    return response.json()      
-def get_data_plans(network):
-   url = f"{SMEPLUG_BASE_URL}/data/plans"
-   headers = {"Authorization": f"Bearer {API_KEY}"}
-   params = {"network": network}
-   response = requests.get(url, headers=headers, params=params)
-   return response.json()
-# ==== SESSION STATE - KADA KA TABA WANNAN ====
-if 'wallet_balance' not in st.session_state:
-    st.session_state.wallet_balance = 0
+# ==== SESSION STATE ====
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+if 'page' not in st.session_state:
+    st.session_state.page = "Dashboard"
 
-if 'commission' not in st.session_state:
-    st.session_state.commission = 150.00
-
-if 'menu' not in st.session_state:
-    st.session_state.menu = "Dashboard"
-# ==============================================
-
-st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="logo.png", layout="wide")
-
-st.image("logo.png", width=200)
-
-# PWA CODE - SA APP YA ZAMA INSTALLABLE
-st.markdown("""
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#0d47a1">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="JSGlobal">
-<link rel="apple-touch-icon" href="logo.png">
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
-}
 # CSS - DESIGN
 st.markdown("""
 <style>
@@ -62,6 +22,7 @@ st.markdown("""
 [data-testid="stHeader"] {background-color: #0d47a1;}
 [data-testid="stSidebar"] {background-color: white !important;}
 
+/* SIDEBAR BUTTONS - KANKANAN */
 [data-testid="stSidebar"] .stButton > button {
     background-color: white !important;
     color: #333333 !important;
@@ -76,6 +37,7 @@ st.markdown("""
     height: 30px !important;
 }
 
+/* RAGE GIRMAN EMOJI */
 [data-testid="stSidebar"] .stButton > button p {
     font-size: 11px !important;
 }
@@ -89,6 +51,7 @@ st.markdown("""
     color: white !important;
 }
 
+/* SAURAN BUTTONS A CIKIN APP */
 .stButton > button {
     background-color: #0d47a1;
     color: white;
@@ -105,134 +68,94 @@ st.markdown("""
 with st.sidebar:
     st.markdown("### Menu")
     
-    if st.button("🏠 Dashboard"):
-        st.session_state.menu = "Dashboard"
-    if st.button("💰 Fund Wallet"):
-        st.session_state.menu = "Fund Wallet"
-    if st.button("👤 KYC Verification"):
-        st.session_state.menu = "KYC"
-    if st.button("📱 Airtime"):
-        st.session_state.menu = "Airtime"
-    if st.button("🖨️ Print Recharge"):
-        st.session_state.menu = "Print"
-    if st.button("🎓 WAEC ePIN"):
-        st.session_state.menu = "WAEC"
-    if st.button("🌐 Data"):
-        st.session_state.menu = "Data"
-    if st.button("🎰 Fund Betting"):
-        st.session_state.menu = "Betting"
-    if st.button("🎓 JAMB ePIN"):
-        st.session_state.menu = "JAMB"
-    if st.button("📺 Cable TV"):
-        st.session_state.menu = "Cable"
-    if st.button("💸 Transfer Money"):
-        st.session_state.menu = "Transfer"
+    if st.button("📊 Dashboard"):
+        st.session_state.page = "Dashboard"
+        st.rerun()
+    
+    if st.button("📱 Data"):
+        st.session_state.page = "Data"
+        st.rerun()
+    
+    if st.button("📞 Airtime"):
+        st.session_state.page = "Airtime"
+        st.rerun()
+    
+    if st.button("💡 Electricity"):
+        st.session_state.page = "Electricity"
+        st.rerun()
+    
+    if st.button("📺 TV"):
+        st.session_state.page = "TV"
+        st.rerun()
+    
+    if st.button("🏦 Pay Bills"):
+        st.session_state.page = "Pay Bills"
+        st.rerun()
+    
+    if st.button("🎓 Education"):
+        st.session_state.page = "Education"
+        st.rerun()
+    
+    if st.button("👛 My Wallet"):
+        st.session_state.page = "My Wallet"
+        st.rerun()
+    
+    if st.button("💰 Commission"):
+        st.session_state.page = "Commission"
+        st.rerun()
+    
+    if st.button("📜 Transactions"):
+        st.session_state.page = "Transactions"
+        st.rerun()
+    
+    if st.button("⚙️ Settings"):
+        st.session_state.page = "Settings"
+        st.rerun()
+    
+    if st.button("🔒 Logout"):
+        st.session_state.logged_in = False
+        st.session_state.page = "Dashboard"
+        st.rerun()
 
-# ==== DASHBOARD ====
-if st.session_state.menu == "Dashboard":
-    
-    st.markdown(f"""
-    <div class="wallet-card">
-        <h3>J.S GLOBAL LINKS</h3>
-        <p>WALLET BALANCE</p>
-        <h1>₦{st.session_state.wallet_balance}</h1>
-        <p>Commission: ₦{st.session_state.commission}</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("### What would you like to do?")
-    
-    col1, col2 = st.columns(2)
-    
+# ==== MAIN PAGE CONTENT ====
+st.title(f"🌐 JS Global - {st.session_state.page}")
+
+if st.session_state.page == "Dashboard":
+    st.write("Welcome to JS Global Dashboard")
+    col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("📱 Airtime", key="dash_airtime"):
-            st.session_state.menu = "Airtime"
-        if st.button("🖨️ Print Recharge", key="dash_print"):
-            st.session_state.menu = "Print"
-        if st.button("🎓 WAEC ePIN", key="dash_waec"):
-            st.session_state.menu = "WAEC"
-        if st.button("🌐 Data", key="dash_data"):
-            st.session_state.menu = "Data"
-        if st.button("🎰 Fund Betting", key="dash_bet"):
-            st.session_state.menu = "Betting"
-            
+        st.metric("Wallet Balance", "₦25,000")
     with col2:
-        if st.button("🎓 JAMB ePIN", key="dash_jamb"):
-            st.session_state.menu = "JAMB"
-        if st.button("📺 Cable TV", key="dash_cable"):
-            st.session_state.menu = "Cable"
-        if st.button("💸 Transfer Money", key="dash_transfer"):
-            st.session_state.menu = "Transfer"
-        if st.button("😊 Smile Internet", key="dash_smile"):
-            st.info("Coming Soon")
-        if st.button("⚡ Electricity", key="dash_electric"):
-            st.info("Coming Soon")
+        st.metric("Today Sales", "₦8,500")
+    with col3:
+        st.metric("Commission", "₦1,200")
 
-# ==== FUND WALLET ====
-elif st.session_state.menu == "Fund Wallet":
-    st.title("💰 Fund Wallet")
-    st.info("KYC Required: Go to Menu > KYC Verification to access all services")
+elif st.session_state.page == "Data":
+    st.write("Data Subscription Page")
     
-    st.markdown("""
-    ### FUND VIA BANK TRANSFER
-    **Access Bank: 1234567890**  
-    **J.S.GLOBAL LINKS AND SERVICES**
-    """)
-
-# ==== DATA ====
-elif st.session_state.menu == "Data":
-    st.title("🌐 Buy Data")
-    st.info("KYC Required: Go to Menu > KYC Verification to access all services")
+elif st.session_state.page == "Airtime":
+    st.write("Airtime Recharge Page")
     
-    network = st.selectbox("Select Network", ["MTN", "Glo", "Airtel", "9mobile"])
-    phone = st.text_input("Phone Number", placeholder="08012345678")
-    plan = st.selectbox("Select Plan", ["1GB - ₦300", "2GB - ₦500", "5GB - ₦1000"])
+elif st.session_state.page == "Electricity":
+    st.write("Electricity Payment Page")
     
-    if st.button("Buy Data Now"):
-        st.warning("Service coming soon. Integrate SMEPlug API to activate.")
-
-# ==== AIRTIME ====
-elif st.session_state.menu == "Airtime":
-    st.title("📱 Buy Airtime")
-    st.info("KYC Required: Go to Menu > KYC Verification to access all services")
+elif st.session_state.page == "TV":
+    st.write("TV Subscription Page")
     
-    network = st.selectbox("Select Network", ["MTN", "Glo", "Airtel", "9mobile"], key="airtime_net")
-    phone = st.text_input("Phone Number", placeholder="08012345678", key="airtime_phone")
-    amount = st.number_input("Amount", min_value=50, max_value=50000, step=50)
+elif st.session_state.page == "Pay Bills":
+    st.write("Pay Bills Page")
     
-    if st.button("Buy Airtime Now"):
-        st.warning("Service coming soon. Integrate SMEPlug API to activate.")
-
-# ==== SAURAN PAGES ====
-elif st.session_state.menu == "KYC":
-    st.title("👤 KYC Verification")
-    st.info("Upload your documents to verify your account")
-    st.warning("KYC system coming soon")
-
-elif st.session_state.menu == "Print":
-    st.title("🖨️ Print Recharge")
-    st.warning("Service coming soon")
-
-elif st.session_state.menu == "WAEC":
-    st.title("🎓 WAEC ePIN")
-    st.warning("Service coming soon")
-
-elif st.session_state.menu == "Betting":
-    st.title("🎰 Fund Betting")
-    st.warning("Service coming soon")
-
-elif st.session_state.menu == "JAMB":
-    st.title("🎓 JAMB ePIN")
-    st.warning("Service coming soon")
-
-elif st.session_state.menu == "Cable":
-    st.title("📺 Cable TV")
-    st.warning("Service coming soon")
-
-elif st.session_state.menu == "Transfer":
-    st.title("💸 Transfer Money")
-    st.warning("Service coming soon")
-
-# ==== FOOTER ====
-st.markdown("---")
-st.markdown("J.S.GLOBAL LINKS AND SERVICES | CAC: RC 8984371 | Access Bank: 1234567890 | 07062589825")
+elif st.session_state.page == "Education":
+    st.write("Education Payment Page")
+    
+elif st.session_state.page == "My Wallet":
+    st.write("My Wallet Page")
+    
+elif st.session_state.page == "Commission":
+    st.write("Commission Page")
+    
+elif st.session_state.page == "Transactions":
+    st.write("Transaction History Page")
+    
+elif st.session_state.page == "Settings":
+    st.write("Settings Page")
