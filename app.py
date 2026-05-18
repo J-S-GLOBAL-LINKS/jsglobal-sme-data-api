@@ -87,7 +87,68 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+# ==== SIDEBAR MENU DA ICONS ====
+st.sidebar.image("logo.png", width=150)
+st.sidebar.markdown("### J.S.GLOBAL LINKS")
 
+menu = st.sidebar.radio(
+    "Menu", 
+    ["
+                "Dashboard",
+        "Sayar da Data", 
+        "Cajin Waya",
+        "Biyan TV",
+        "Biyan NEPA",
+        "Profile Dina",
+        "Wallet Dina",
+        "Tarihin Ciniki",
+        "Settings",
+        "Fita"
+       # ==== NUNA KOWANE PAGE BIYA MENU ====
+if menu == "Dashboard":
+    st.title("🏠 Dashboard")
+    st.success("Barka da zuwa J.S.GLOBAL LINKS")
+    st.metric("Wallet Balance", "₦5,000")
+    
+elif menu == "Sayar da Data":
+    st.title("📊 Sayar da Data")
+    st.info("Anan zaku sayi data mai rahusa")
+    
+elif menu == "Cajin Waya":
+    st.title("💰 Cajin Waya / Airtime")
+    
+elif menu == "Biyan TV":
+    st.title("📺 Biyan TV - GOTV/DSTV/Startimes")
+    
+elif menu == "Biyan NEPA":
+    st.title("💡 Biyan NEPA / Lantarki")
+    
+elif menu == "Profile Dina":
+    st.title("👤 Profile Dina")
+    
+elif menu == "Wallet Dina":
+    st.title("💳 Wallet Dina")
+    
+elif menu == "Tarihin Ciniki":
+    st.title("📋 Tarihin Ciniki")
+    
+elif menu == "Settings":
+    st.title("⚙️ Settings")
+    
+elif menu == "Fita":
+    st.session_state.logged_in = False
+    st.rerun() 
+       
+        
+       
+        
+        
+        
+        
+        
+    ],
+    label_visibility="collapsed"
+)
 api_key = st.secrets["SMEPLUG_API_KEY"]
 
 # 🔥🔥🔥 CANZA WANNAN ZUWA BANK DINKA 🔥🔥🔥
