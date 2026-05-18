@@ -1,12 +1,28 @@
 
-import streamlit as st
-import requests
-from datetime import datetime
-import random
-import string
+2 import streamlit as st
+3 import requests
+4 from datetime import datetime
+5 import random
+6 import string
+7 
+8 # ==== KARA WANNAN A NAN LINE 8 ====
+9 if 'wallet_balance' not in st.session_state:
+10     st.session_state.wallet_balance = 0
+11 
+12 if 'menu' not in st.session_state:
+13     st.session_state.menu = "Dashboard"
+14 # =================================
+15 
+16 st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="logo.png", layout="wide")
+17 
+18 st.image("logo.png", width=200)
+19 
+20 # PWA CODE - SA APP YA ZAMA INSTALLABLE
+21 st.markdown("""
+...
 
-st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="logo.png", layout="wide")
-
+25 # KAR KA SA WANI set_page_config KO st.image A NAN
+26 # GOGE LINE 25-27 TSOFAFFIN
 st.image("logo.png", width=200)
 
 # PWA CODE - SA APP YA ZAMA INSTALLABLE
