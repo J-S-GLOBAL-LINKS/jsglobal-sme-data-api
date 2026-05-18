@@ -245,14 +245,12 @@ elif st.session_state.page == "Buy Data":
         if phone and len(phone) == 11:
             st.success(f"✅ Data {plan} sent to {phone}")
             st.balloons()
-        else:
-            st.error("Enter valid phone number")
-
-        if phone and len(phone) == 11:
+         if phone and len(phone) == 11:
             st.success(f"✅ Data {plan} sent to {phone}")
             st.balloons()
         else:
-        
+            st.error("Enter valid phone number")
+
 elif st.session_state.page == "Cable TV":
     st.title("📺 Cable TV Subscription")
     provider = st.selectbox("Select Provider", ["DSTV", "GOTV", "Startimes"])
