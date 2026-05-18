@@ -84,20 +84,19 @@ st.markdown("""
     border: none !important;
     text-align: left !important;
     padding: 4px 6px !important;
-    font-size: 11px !import
+    font-size: 11px !important;
     border-radius: 5px !important;
     margin: 1px 0px !important;
     line-height: 1.1 !important;
     height: 30px !important;
 }
 
-/* RAGE GIRMAN EMOJI KAWAI - WANNAN NE SIRRIN */
-[data-testid="stSidebar"] .stButton > button > div > p {
+/* RAGE GIRMAN EMOJI KAWAI */
+[data-testid="stSidebar"] .stButton > button p {
     font-size: 11px !important;
 }
 
-/* HAKA KUMA WANNAN YANA KAMA EMOJI */
-[data-testid="stSidebar"] button div[data-testid="stMarkdownContainer"] {
+[data-testid="stSidebar"] button div[data-testid="stMarkdownContainer"] p {
     font-size: 11px !important;
 }
 
@@ -118,6 +117,7 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {background-color: #ffffff;}
