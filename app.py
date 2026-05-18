@@ -1,10 +1,14 @@
+
 import streamlit as st
 import requests
 from datetime import datetime
 import random
 import string
 
-st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="📱", layout="wide")
+st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="logo.png", layout="wide")
+
+st.image("logo.png", width=200)
+
 # PWA CODE - SA APP YA ZAMA INSTALLABLE
 st.markdown("""
 <link rel="manifest" href="./manifest.json">
