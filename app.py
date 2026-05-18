@@ -68,7 +68,6 @@ if ('serviceWorker' in navigator) {
 
 
 
-
 # CSS - DESIGN
 st.markdown("""
 <style>
@@ -76,7 +75,6 @@ st.markdown("""
 [data-testid="stHeader"] {background-color: #0d47a1;}
 [data-testid="stSidebar"] {background-color: white !important;}
 
-/* SIDEBAR BUTTONS - KANKANAN KAI TSAYE */
 [data-testid="stSidebar"] .stButton > button {
     background-color: white !important;
     color: #333333 !important;
@@ -91,7 +89,6 @@ st.markdown("""
     height: 30px !important;
 }
 
-/* RAGE GIRMAN EMOJI KAWAI */
 [data-testid="stSidebar"] .stButton > button p {
     font-size: 11px !important;
 }
@@ -105,7 +102,6 @@ st.markdown("""
     color: white !important;
 }
 
-/* SAURAN BUTTONS A CIKIN APP */
 .stButton > button {
     background-color: #0d47a1;
     color: white;
@@ -117,27 +113,7 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-# ==== SIDEBAR MENU ====
-with st.sidebar:
-    st.markdown("### Menu")
-/* HOVER EFFECT */
-[data-testid="stSidebar"] .stButton er {
-    background-color: #0d47a1 !important;
-    color: white !import
-}
 
-/* SAURAN BUTTONS A CIKIN APP */
-.stButton > button {
-    background-color: #0d47a1;
-    color: white;
-    border-radius: 8px;
-    border: none;
-    padding: 10px;
-    font-weight: 600;
-    width: 100%;
-}
-</style>
-""", unsafe_allow_html=True)
 # ==== SIDEBAR MENU ====
 with st.sidebar:
     st.markdown("### Menu")
