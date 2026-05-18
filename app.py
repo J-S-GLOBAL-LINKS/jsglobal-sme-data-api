@@ -67,23 +67,7 @@ if ('serviceWorker' in navigator) {
 </script>
 """, unsafe_allow_html=True)
 
-# CSS - DESIGN
-st.markdown("""
-<style>
-[data-testid="stAppViewContainer"] {background-color: #ffffff;}
-[data-testid="stHeader"] {background-color: #0d47a1;}
-[data-testid="stSidebar"] {background-color: white !important;}
 
-[data-testid="stSidebar"] .stButton > button {
-    background-color: white !important;
-    color: #333333 !important;
-    font-weight: 500 !important;
-    border: none !important;
-    text-align: left !important;
-    padding: 12px 20px !important;
-    border-radius: 8px !important;
-    width: 100% !important;
-    margin: 2px 0 !important;
 }
 
 [data-testid="stSidebar"] .stButton > button:hover {
@@ -105,24 +89,45 @@ st.markdown("""
     background-color: #1565c0;
     color: white;
 }
+# CSS - DESIGN
+st.markdown("""
+<style>
+[data-testid="stAppViewContainer"] {background-color: #ffffff;}
+[data-testid="stHeader"] {background-color: #0d47a1;}
+[data-testid="stSidebar"] {background-color: white !important;}
 
-div[data-testid="column"] {
-    background-color: #f5f5f5;
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
+/* SIDEBAR BUTTONS - KANKANAN */
+[data-testid="stSidebar"] .stButton > button {
+    background-color: white !important;
+    color: #333333 !important;
+    font-weight: 500 !important;
+    border: none !important;
+    text-align: left !important;
+    padding: 5px 8px !important;   /* Karami sosai */
+    font-size: 12px !important;   /* ICONS KANKANAN KAI */
+    border-radius: 6px !important;
+    margin: 1px 0px !important;
+    line-height: 1.2 !important;
 }
 
-.wallet-card {
-    background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+/* HOVER EFFECT */
+[data-testid="stSidebar"] .stButton > button:hover {
+    background-color: #0d47a1 !important;
+    color: white !important;
+}
+
+/* SAURAN BUTTONS A CIKIN APP */
+.stButton > button {
+    background-color: #0d47a1;
     color: white;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
+    border-radius: 8px;
+    border: none;
+    padding: 10px;
+    font-weight: 600;
+    width: 100%;
 }
 </style>
 """, unsafe_allow_html=True)
-
 # ==== SIDEBAR MENU ====
 with st.sidebar:
     st.markdown("### Menu")
