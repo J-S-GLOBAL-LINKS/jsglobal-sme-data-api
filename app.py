@@ -36,13 +36,9 @@ def get_data_plans(network):
    params = {"network": network}
    response = requests.get(url, headers=headers, params=params)
    return response.json()
-
 # ==== SESSION STATE - KADA KA TABA WANNAN ====
 if 'wallet_balance' not in st.session_state:
-st.session_state.wallet_balance = 0
-
-
-
+    st.session_state.wallet_balance = 0
 
 if 'commission' not in st.session_state:
     st.session_state.commission = 150.00
