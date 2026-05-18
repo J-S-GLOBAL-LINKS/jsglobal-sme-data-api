@@ -64,11 +64,6 @@ st.markdown("""
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
-</script>
-""", unsafe_allow_html=True)
-
-
-
 # CSS - DESIGN
 st.markdown("""
 <style>
@@ -76,18 +71,29 @@ st.markdown("""
 [data-testid="stHeader"] {background-color: #0d47a1;}
 [data-testid="stSidebar"] {background-color: white !important;}
 
-/* SIDEBAR BUTTONS - KANKANAN KAI */
+/* SIDEBAR BUTTONS - KANKANAN KAI TSAYE */
 [data-testid="stSidebar"] .stButton > button {
     background-color: white !important;
     color: #333333 !important;
     font-weight: 500 !important;
     border: none !important;
     text-align: left !important;
-    padding: 5px 8px !important;
-    font-size: 12px !important;
-    border-radius: 6px !important;
+    padding: 4px 6px !important;
+    font-size: 11px !import
+    border-radius: 5px !important;
     margin: 1px 0px !important;
-    line-height: 1.2 !important;
+    line-height: 1.1 !important;
+    height: 30px !important;
+}
+
+/* RAGE GIRMAN EMOJI KAWAI - WANNAN NE SIRRIN */
+[data-testid="stSidebar"] .stButton > button > div > p {
+    font-size: 11px !important;
+}
+
+/* HAKA KUMA WANNAN YANA KAMA EMOJI */
+[data-testid="stSidebar"] button div[data-testid="stMarkdownContainer"] {
+    font-size: 11px !important;
 }
 
 [data-testid="stSidebar"] .stButton > button:hover {
