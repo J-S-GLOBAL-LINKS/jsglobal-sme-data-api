@@ -93,8 +93,8 @@ st.sidebar.markdown("### J.S.GLOBAL LINKS")
 
 menu = st.sidebar.radio(
     "Menu", 
-    ["
-                "Dashboard",
+    
+        "Dashboard",
         "Sayar da Data", 
         "Cajin Waya",
         "Biyan TV",
