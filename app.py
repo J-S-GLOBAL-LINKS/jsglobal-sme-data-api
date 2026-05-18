@@ -1,47 +1,26 @@
 
-2 import streamlit as st
-3 import requests
-4 from datetime import datetime
-5 import random
-6 import string
-7 
-8 # ==== KARA WANNAN A NAN LINE 8 ====
-9 if 'wallet_balance' not in st.session_state:
-10     st.session_state.wallet_balance = 0
-11 
-12 if 'menu' not in st.session_state:
-13     st.session_state.menu = "Dashboard"
-14 # =================================
-15 
-16 st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="logo.png", layout="wide")
-17 
-18 st.image("logo.png", width=200)
-19 
-20 # PWA CODE - SA APP YA ZAMA INSTALLABLE
-21 st.markdown("""
-...
+import streamlit as st
+import requests
+from datetime import datetime
+import random
+import string
 
-25 # KAR KA SA WANI set_page_config KO st.image A NAN
-26 # GOGE LINE 25-27 TSOFAFFIN
+# ==== KARA WANNAN A NAN LINE 8 ====
+if 'wallet_balance' not in st.session_state:
+    st.session_state.wallet_balance = 0
+
+if 'menu' not in st.session_state:
+    st.session_state.menu = "Dashboard"
+# =================================
+15 
+st.set_page_config(page_title="J.S.GLOBAL LINKS", page_icon="logo.png", layout="wide")
+
 st.image("logo.png", width=200)
 
 # PWA CODE - SA APP YA ZAMA INSTALLABLE
 st.markdown("""
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#0d47a1">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="JSGLOBAL">
-<link rel="apple-touch-icon" href="./icon-192.png">
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('./sw.js');
-  });
-}
-</script>
-""", unsafe_allow_html=True)
-st.markdown("""
+...
+
 <style>
 [data-testid="stAppViewContainer"] {background-color: #ffffff;}
 [data-testid="stHeader"] {background-color: #0d47a1;}
