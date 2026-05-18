@@ -248,7 +248,13 @@ elif st.session_state.page == "Buy Data":
         else:
             st.error("Enter valid phone number")
 
-else:elif st.session_state.page == "Cable TV":
+        if phone and len(phone) == 11:
+            st.success(f"✅ Data {plan} sent to {phone}")
+            st.balloons()
+        else:
+            st.error("Enter valid phone number")
+
+elif st.session_state.page == "Cable TV":
     st.title("📺 Cable TV Subscription")
     provider = st.selectbox("Select Provider", ["DSTV", "GOTV", "Startimes"])
     smartcard = st.text_input("Smart Card Number", placeholder="1234567890")
@@ -268,6 +274,80 @@ else:elif st.session_state.page == "Cable TV":
             st.error("Enter Smart Card Number")
 
 elif st.session_state.page == "Electricity":
+    st.title("⚡ Electricity Payment")
+    disco = st.selectbox("Select DisCo", ["KEDCO - Kano", "AEDC - Abuja", "EKEDC - Lagos"])
+    meter_type = st.radio("Meter Type", ["Prepaid", "Postpaid"])
+    meter_no = st.text_input("Meter Number", placeholder="12345678901")
+    amount = st.number_input("Amount", min_value=1000, step=500, value=5000)
+    if st.button("Pay Bill", type="primary", use_container_width=True):
+        if meter_no:
+            st.success(f"✅ ₦{amount:,} paid to Meter {meter_no}")
+            st.session_state.wallet_balance -= amount
+        else:
+            st.error("Enter Meter Number")
+
+elif st.session_state.page == "WAEC ePIN":
+    st.title("🎓 WAEC ePIN Purchase")
+    quantity = st.number_input("Quantity", min_value=1, max_value=10, value=1)
+    price = 3500 * quantity
+    st.info(f"Total: ₦{price:,}")
+    if st.button("Buy WAEC ePIN", type="primary", use_container_width=True):
+        st.success(f"✅ {quantity} WAEC ePIN generated")
+        st.code("PIN: WAEC-1234-5678-9012")
+
+elif st.session_state.page == "JAMB ePIN":
+    st.title("📝 JAMB ePIN Purchase")
+    quantity = st.number_input("Quantity", min_value=1, max_value=10, value=1)
+    price = 4700 * quantity
+    st.info(f"Total: ₦{price:,}")
+    if st.button("Buy JAMB ePIN", type="primary", use_container_width=True):
+        st.success(f"✅ {quantity} JAMB ePIN generated")
+        st.code("PIN: JAMB-9876-5432-1098")
+
+elif st.session_state.page == "Transfer Money":
+    st.title("💸 Transfer Money")
+    bank = st.selectbox("Select Bank", ["Access Bank", "GTBank", "UBA", "First Bank", "Zenith Bank"])
+    account_no = st.text_input("Account Number", placeholder="1234567890")
+    amount = st.number_input("Amount", min_value=100, step=100)
+    if st.button("Transfer", type="primary", use_container_width=True):
+        if account_no and len(account_no) == 10:
+            st.success(f"✅ ₦{amount:,} sent to {account_no}")
+            st.session_state.wallet_balance -= amount
+        else:
+            st.error("Enter valid 10-digit account number")
+
+elif st.session_state.page == "Withdraw Commission":
+    st.title("💰 Withdraw Commission")
+    st.metric("Available Commission", "₦5,450.00")
+    amount = st.number_input("Withdrawal Amount", min_value=100, max_value=5450, step=100)
+    bank = st.selectbox("Bank", ["Access Bank", "GTBank", "UBA", "First Bank"])
+    account_no = st.text_input("Account Number")
+    if st.button("Withdraw", type="primary", use_container_width=True):
+        st.success(f"✅ ₦{amount:,} withdrawal request submitted")
+
+elif st.session_state.page == "Print Recharge":
+    st.title("🖨️ Print Recharge Card")
+    st.info("Print Recharge Card feature coming soon...")
+
+elif st.session_state.page == "Fund Betting":
+    st.title("🎰 Fund Betting Wallet")
+    st.info("Fund Betting Wallet feature coming soon...")
+
+elif st.session_state.page == "Smile Internet":
+    st.title("🌐 Smile Internet")
+    st.info("Smile Internet feature coming soon...")
+
+else:
+    st.title(st.session_state.page)
+    st.info(f"{st.session_state.page} feature coming soon...")
+    if st.button("← Back to Dashboard"):
+        st.session_state.page = "Dashboard"
+        st.rerun()
+
+# FLOATING HELP BUTTON - SAU DAYA KAWAI
+st.markdown("""
+<button class='help-float'>Need Help?</button>
+""", unsafe_allow_html=True)
     st.title("⚡ Electricity Payment")
     disco = st.selectbox("Select DisCo", ["KEDCO - Kano", "AEDC - Abuja", "EKEDC - Lagos", "IBEDC - Ibadan"])
     meter_type = st.radio("Meter Type", ["Prepaid", "Postpaid"])
