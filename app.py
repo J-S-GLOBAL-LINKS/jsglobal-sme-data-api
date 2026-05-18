@@ -252,7 +252,7 @@ elif st.session_state.page == "Buy Data":
             st.success(f"✅ Data {plan} sent to {phone}")
             st.balloons()
         else:
-            st.error("Enter valid phone number")
+        
 elif st.session_state.page == "Cable TV":
     st.title("📺 Cable TV Subscription")
     provider = st.selectbox("Select Provider", ["DSTV", "GOTV", "Startimes"])
@@ -347,5 +347,3 @@ else:
 st.markdown("""
 <button class='help-float'>Need Help?</button>
 """, unsafe_allow_html=True)
-
-# KARSHEN FILE - BABU WANI ABU BAYAN WANNAN
