@@ -15,35 +15,34 @@ if 'logged_in' not in st.session_state:
 if 'page' not in st.session_state:
     st.session_state.page = "Dashboard"
 
-# CSS - DESIGN
+# CSS - DESIGN FOR ANDROID
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {background-color: #ffffff;}
 [data-testid="stHeader"] {background-color: #0d47a1;}
 [data-testid="stSidebar"] {background-color: white !important;}
 
-/* SIDEBAR BUTTONS - KANKANAN */
+/* SIDEBAR BUTTONS */
 [data-testid="stSidebar"] .stButton > button {
     background-color: white !important;
     color: #333333 !important;
     font-weight: 500 !important;
     border: none !important;
     text-align: left !important;
-    padding: 4px 6px !important;
-    font-size: 11px !important;
-    border-radius: 5px !important;
-    margin: 1px 0px !important;
-    line-height: 1.1 !important;
-    height: 30px !important;
+    padding: 2px 4px !important;
+    font-size: 9px !important;
+    border-radius: 4px !important;
+    margin: 0px !important;
+    line-height: 1 !important;
+    height: 24px !important;
 }
 
-/* RAGE GIRMAN EMOJI */
-[data-testid="stSidebar"] .stButton > button p {
-    font-size: 11px !important;
-}
-
-[data-testid="stSidebar"] button div[data-testid="stMarkdownContainer"] p {
-    font-size: 11px !important;
+/* WANNAN SHINE SIRRIN ANDROID */
+[data-testid="stSidebar"] .stButton > button * {
+    font-size: 9px !important;
+    transform: scale(0.65) !important;
+    display: inline-block !important;
+    transform-origin: left center !important;
 }
 
 [data-testid="stSidebar"] .stButton > button:hover {
@@ -51,7 +50,6 @@ st.markdown("""
     color: white !important;
 }
 
-/* SAURAN BUTTONS A CIKIN APP */
 .stButton > button {
     background-color: #0d47a1;
     color: white;
