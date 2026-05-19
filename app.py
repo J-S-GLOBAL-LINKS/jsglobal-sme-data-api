@@ -18,6 +18,7 @@ PAYSTACK_PUBLIC_KEY = st.secrets["PAYSTACK_PUBLIC_KEY"]
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 ADMIN_PASSWORD = st.secrets["ADMIN_PASSWORD"]
+SMPLUG_BASE_URL = "https://smplug.ng/api"
 
 # ===== SUPABASE INIT =====
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -69,6 +70,7 @@ def get_user_data(email):
 def update_wallet(user_id, amount):
     try:
         supabase.table('users').update({'wallet_balance': amount}).eq('id', user_id).execute()
+        st.session_state.wallet_balance = amount
     except:
         pass
 
@@ -98,11 +100,10 @@ def add_commission(reseller_id, sub_user_id, service, amount):
             'date': datetime.now().isoformat()
         }).execute()
 
-        # Update reseller earnings
         reseller = supabase.table('users').select("total_earnings,wallet_balance").eq('id', reseller_id).execute()
         if reseller.data:
-            new_earn = reseller.data[0]['total_earnings'] + commission
-            new_wallet = reseller.data[0]['wallet_balance'] + commission
+            new_earn = float(reseller.data[0]['total_earnings']) + commission
+            new_wallet = float(reseller.data[0]['wallet_balance']) + commission
             supabase.table('users').update({'total_earnings': new_earn, 'wallet_balance': new_wallet}).eq('id', reseller_id).execute()
     except:
         pass
@@ -124,7 +125,7 @@ if not st.session_state.logged_in:
                 st.session_state.logged_in = True
                 st.session_state.current_user = login_email
                 st.session_state.user_id = user['id']
-                st.session_state.wallet_balance = user['wallet_balance']
+                st.session_state.wallet_balance = float(user['wallet_balance'])
                 st.session_state.kyc_status = user['kyc_status']
                 st.session_state.account_type = user['account_type']
                 st.rerun()
@@ -152,17 +153,18 @@ if not st.session_state.logged_in:
                 }).execute()
                 st.success("Account created! Please Sign In")
                 st.balloons()
-            except:
-                st.error("Email already exists")
+            except Exception as e:
+                st.error("Email already exists or error occurred")
 
 # ===== MAIN APP =====
 else:
+    user_data = get_user_data(st.session_state.current_user)
+
     # TOP BAR
     st.markdown("""<div class='top-bar'><div>☰</div><div style='font-weight: 600; font-size: 16px;'>Dashboard</div><div>🔔</div></div>""", unsafe_allow_html=True)
 
     # SIDEBAR
     with st.sidebar:
-        user_data = get_user_data(st.session_state.current_user)
         st.markdown(f"### {user_data['full_name'].upper()}")
 
         if st.session_state.kyc_status == "Approved":
@@ -189,13 +191,14 @@ else:
         ]
 
         for icon, page in menu_items:
-            if st.button(f"{icon} {page}", use_container_width=True):
+            if st.button(f"{icon} {page}", key=f"menu_{page}", use_container_width=True):
                 st.session_state.page = page
                 st.rerun()
 
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("🚪 Sign Out", use_container_width=True):
-            st.session_state.logged_in = False
+            for key in st.session_state.keys():
+                del st.session_state[key]
             st.rerun()
 
     # ===== DASHBOARD =====
@@ -218,7 +221,6 @@ else:
             st.warning("⚠️ Complete KYC to unlock ₦5,000,000 daily limit")
 
         if st.session_state.account_type == "reseller":
-            user_data = get_user_data(st.session_state.current_user)
             st.markdown(f"""
             <div class='upgrade-card'>
                 <div style='display: flex; justify-content: space-between; align-items: center;'>
@@ -263,7 +265,7 @@ else:
                     with col2:
                         phone = st.text_input("Phone Number *")
                         address = st.text_area("Home Address *")
-                        state = st.selectbox("State *", ["Kano", "Lagos", "Abuja", "Kaduna"])
+                        state = st.selectbox("State *", ["Kano", "Lagos", "Abuja", "Kaduna", "Rivers", "Oyo"])
 
                     id_type = st.selectbox("ID Type *", ["NIN", "BVN", "Driver's License"])
                     id_number = st.text_input(f"{id_type} Number *")
@@ -287,7 +289,6 @@ else:
     # ===== RESELLER PAGE =====
     elif st.session_state.page == "My Resellers":
         st.title("👥 My Resellers & Commission")
-        user_data = get_user_data(st.session_state.current_user)
 
         if user_data['account_type'] == 'reseller':
             tab1, tab2, tab3 = st.tabs(["📊 Overview", "➕ Add Sub-User", "💸 Earnings"])
@@ -295,7 +296,7 @@ else:
             with tab1:
                 sub_users = supabase.table('users').select("*").eq('parent_id', st.session_state.user_id).execute()
                 comm = supabase.table('commissions').select("commission").eq('reseller_id', st.session_state.user_id).execute()
-                total_earn = sum([c['commission'] for c in comm.data])
+                total_earn = sum([float(c['commission']) for c in comm.data])
 
                 col1, col2, col3 = st.columns(3)
                 col1.metric("Total Sub-Users", len(sub_users.data))
@@ -335,13 +336,13 @@ else:
                             st.error("Email already exists")
 
             with tab3:
-                comm_history = supabase.table('commissions').select("*").eq('reseller_id', st.session_state.user_id).execute()
+                comm_history = supabase.table('commissions').select("*").eq('reseller_id', st.session_state.user_id).order('date', desc=True).execute()
                 if comm_history.data:
                     st.dataframe(comm_history.data, use_container_width=True)
                 else:
                     st.info("No commissions yet")
         else:
-            st.info("🚀 Upgrade to Reseller Account to earn 2% commission")
+            st.info("🚀 Upgrade to Reseller Account to earn 2% commission on all sub-users")
             if st.button("Upgrade to Reseller - ₦10,000", type="primary"):
                 if st.session_state.wallet_balance >= 10000:
                     new_bal = st.session_state.wallet_balance - 10000
@@ -356,7 +357,7 @@ else:
                     st.balloons()
                     st.rerun()
                 else:
-                    st.error("Insufficient balance")
+                    st.error("Insufficient balance. Fund wallet first")
 
     # ===== FUND WALLET - PAYSTACK =====
     elif st.session_state.page == "Fund Wallet":
@@ -368,7 +369,7 @@ else:
             data = {
                 "email": st.session_state.current_user,
                 "amount": int(amount * 100),
-                "callback_url": "https://yourapp.com/verify"
+                "callback_url": "https://yourapp.streamlit.app"
             }
             res = requests.post("https://api.paystack.co/transaction/initialize", headers=headers, json=data)
 
@@ -376,7 +377,7 @@ else:
                 url = res.json()['data']['authorization_url']
                 st.success("Click below to pay")
                 st.link_button("Pay Now", url)
-                st.info("After payment, your wallet will update automatically")
+                st.info("After successful payment, refresh this page to see updated balance")
             else:
                 st.error("Payment initialization failed")
 
@@ -397,19 +398,16 @@ else:
                         res = requests.post(f"{SMPLUG_BASE_URL}/topup/", headers=headers, json=payload)
 
                         if res.json().get("status") == "success":
-                            # Commission for reseller
-                            user_data = get_user_data(st.session_state.current_user)
                             if user_data['parent_id']:
                                 add_commission(user_data['parent_id'], st.session_state.user_id, "Airtime", amount)
 
                             new_bal = st.session_state.wallet_balance - amount
                             update_wallet(st.session_state.user_id, new_bal)
-                            st.session_state.wallet_balance = new_bal
                             save_transaction(st.session_state.user_id, "Airtime", amount, "Success", res.json().get('id'), phone)
                             st.success(f"✅ Airtime ₦{amount:,} sent to {phone}")
                             st.balloons()
                         else:
-                            st.error("Failed: " + str(res.json().get('message')))
+                            st.error("Failed: " + str(res.json().get('message', 'Unknown error')))
                 else:
                     st.error("Insufficient wallet balance")
             else:
@@ -442,18 +440,16 @@ else:
                         res = requests.post(f"{SMPLUG_BASE_URL}/data", headers=headers, json=payload)
 
                         if res.json().get("status") == "success":
-                            user_data = get_user_data(st.session_state.current_user)
                             if user_data['parent_id']:
                                 add_commission(user_data['parent_id'], st.session_state.user_id, "Data", amount)
 
                             new_bal = st.session_state.wallet_balance - amount
                             update_wallet(st.session_state.user_id, new_bal)
-                            st.session_state.wallet_balance = new_bal
                             save_transaction(st.session_state.user_id, "Data", amount, "Success", res.json().get('id'), phone)
                             st.success(f"✅ {plan_name} sent to {phone}")
                             st.balloons()
                         else:
-                            st.error("Failed: " + str(res.json().get('message')))
+                            st.error("Failed: " + str(res.json().get('message', 'Unknown error')))
                 else:
                     st.error("Insufficient wallet balance")
             else:
@@ -462,7 +458,7 @@ else:
     # ===== TRANSACTIONS =====
     elif st.session_state.page == "Transactions":
         st.title("💸 Transaction History")
-        trans = supabase.table('transactions').select("*").eq('user_id', st.session_state.user_id).order('date', desc=True).execute()
+        trans = supabase.table('transactions').select("*").eq('user_id', st.session_state.user_id).order('date', desc=True).limit(50).execute()
         if trans.data:
             st.dataframe(trans.data, use_container_width=True)
         else:
@@ -485,14 +481,14 @@ else:
                 st.session_state.admin_logged_in = False
                 st.rerun()
 
-            tab1, tab2, tab3 = st.tabs(["📋 KYC Requests", "👥 All Users", "💰 Transactions"])
+            tab1, tab2, tab3, tab4 = st.tabs(["📋 KYC Requests", "👥 All Users", "💰 Transactions", "📊 Stats"])
 
             with tab1:
-                st.subheader("Pending KYC")
+                st.subheader("Pending KYC Verifications")
                 users = supabase.table('users').select("*").eq('kyc_status', 'Pending').execute()
                 for user in users.data:
-                    st.write(f"**{user['full_name']}** - {user['email']}")
-                    col1, col2 = st.columns(2)
+                    st.write(f"**{user['full_name']}** - {user['email']} - {user['phone']}")
+                    col1, col2, col3 = st.columns(3)
                     if col1.button("✅ Approve", key=f"app_{user['id']}"):
                         supabase.table('users').update({'kyc_status': 'Approved'}).eq('id', user['id']).execute()
                         st.success("Approved")
@@ -506,16 +502,26 @@ else:
             with tab2:
                 users = supabase.table('users').select("*").execute()
                 st.dataframe(users.data, use_container_width=True)
-                col1, col2, col3 = st.columns(3)
-                col1.metric("Total Users", len(users.data))
-                col2.metric("Resellers", len([u for u in users.data if u['account_type'] == 'reseller']))
-                col3.metric("Verified", len([u for u in users.data if u['kyc_status'] == 'Approved']))
 
             with tab3:
                 trans = supabase.table('transactions').select("*").order('date', desc=True).limit(100).execute()
                 st.dataframe(trans.data, use_container_width=True)
 
+            with tab4:
+                users = supabase.table('users').select("*").execute()
+                trans = supabase.table('transactions').select("amount").execute()
+                total_revenue = sum([float(t['amount']) for t in trans.data])
+
+                col1, col2, col3, col4 = st.columns(4)
+                col1.metric("Total Users", len(users.data))
+                col2.metric("Resellers", len([u for u in users.data if u['account_type'] == 'reseller']))
+                col3.metric("Verified", len([u for u in users.data if u['kyc_status'] == 'Approved']))
+                col4.metric("Total Revenue", f"₦{total_revenue:,.2f}")
+
     # ===== SAURAN PAGES =====
+    elif st.session_state.page in ["Cable TV", "Electricity"]:
+        st.title(st.session_state.page)
+        st.info("Feature coming soon... Integrate with SMEPlug API")
     else:
         st.title(st.session_state.page)
         st.info("Coming soon...")
