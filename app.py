@@ -111,9 +111,7 @@ else:
     if st.sidebar.button("🚪 Logout", use_container_width=True):
         st.session_state.logged_in = False
         st.rerun()
-    
     st.title("📱 JS GLOBAL Dashboard")
-    
     if st.button("⬅️ Back to Login Page"):
         st.session_state.logged_in = False
         st.rerun()
