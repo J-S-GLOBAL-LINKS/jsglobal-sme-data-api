@@ -45,7 +45,7 @@ if not st.session_state.logged_in:
     tab1, tab2, tab3 = st.tabs(["🔐 Sign In", "📝 Sign Up", "🔑 Forgot Password"])
 
     with tab1:
-        st.subheader("Shiga Account Dinka")
+        st.subheader("Login to Your Account")
         login_email = st.text_input("Email", key="login_email")
         login_pass = st.text_input("Password", type="password", key="login_pass")
         if st.button("Sign In", type="primary", use_container_width=True):
@@ -63,10 +63,10 @@ if not st.session_state.logged_in:
                 else:
                     st.error("Invalid email or password")
             else:
-                st.warning("Cika email da password")
+                st.warning("Please enter email and password")
 
     with tab2:
-        st.subheader("Bude Sabon Account")
+        st.subheader("Create New Account")
         name = st.text_input("Full Name", key="signup_name")
         signup_email = st.text_input("Email", key="signup_email")
         signup_pass = st.text_input("Password", type="password", key="signup_pass")
@@ -79,27 +79,27 @@ if not st.session_state.logged_in:
                         'phone': signup_phone, 'wallet_balance': 0, 'kyc_status': 'pending',
                         'commission_rate': 0, 'total_earnings': 0, 'account_type': 'user'
                     }).execute()
-                    st.success("Account created! Yanzu ka iya Sign In")
+                    st.success("Account created! You can now Sign In")
                     st.balloons()
                 except:
-                    st.error("Email already exists ko akwai matsala")
+                    st.error("Email already exists or there was an error")
             else:
-                st.warning("Cika duka form din")
+                st.warning("Please fill all fields")
 
     with tab3:
-        st.subheader("Canza Password")
-        st.write("Shigar da email dinka don aiko maka link na canza password")
+        st.subheader("Reset Password")
+        st.write("Enter your email to receive a password reset link")
         reset_email = st.text_input("Email", key="reset_email")
         if st.button("Send Reset Link", type="primary", use_container_width=True):
             if reset_email:
                 try:
                     supabase.auth.reset_password_for_email(reset_email)
-                    st.success("An aiko link zuwa email dinka ✅")
-                    st.info("Duba inbox ko spam folder")
+                    st.success("Reset link sent to your email ✅")
+                    st.info("Check your inbox or spam folder")
                 except:
-                    st.error("Email din nan ba a rajista ba")
+                    st.error("This email is not registered")
             else:
-                st.warning("Da fatan za a shigar da email")
+                st.warning("Please enter your email")
 
 else:
     st.sidebar.markdown(f"**👤 {st.session_state.full_name}**")
@@ -123,8 +123,8 @@ else:
             with col2: st.metric("Transactions", "0")
             with col3: st.metric("Revenue", "₦0")
             with col4: st.metric("Profit", "₦0")
-        with admin_tab2: st.write("User Management zai zo anan")
-        with admin_tab3: st.write("Duka transactions za su bayyana anan")
+        with admin_tab2: st.write("User Management will be here")
+        with admin_tab3: st.write("All transactions will appear here")
     
     else:
         st.info(f"👤 Welcome {st.session_state.full_name}")
