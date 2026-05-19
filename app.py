@@ -112,13 +112,11 @@ else:
         st.session_state.logged_in = False
         st.rerun()
     
-     st.title("📱 JS GLOBAL Dashboard")
+    st.title("📱 JS GLOBAL Dashboard")
     
-    # Back to Login Button - Saka nan
     if st.button("⬅️ Back to Login Page"):
         st.session_state.logged_in = False
         st.rerun()
-    
     
     if st.session_state.account_type == 'admin':
         st.success("👑 Welcome Admin - Jamilu Haruna")
